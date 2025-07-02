@@ -1,0 +1,46 @@
+{
+	"name": "personal-time-punch",
+	"version": "0.0.0",
+	"module": "index.ts",
+	"type": "module",
+	"private": true,
+	"main": "./.vite/build/main.cjs",
+	"author": {
+		"email": "matin.tat85@gmail.com",
+		"name": "Matin Tat",
+		"url": "https://github.com/WerdoxDev"
+	},
+	"scripts": {
+		"dev": "bun ./scripts/dev.ts",
+		"preview": "vite preview",
+		"build": "bun run vite:build && bun run electron:build",
+		"vite:dev": "vite",
+		"vite:build": "cross-env NODE_ENV=production vite build",
+		"electron:build": "bun ./scripts/build.ts && electron-builder --config ./electron-builder-config.ts",
+		"electron:run": "bun ./scripts/build.ts && electron .",
+		"build:fast": "bun run vite:build && bun ./scripts/build.ts && electron-builder --config ./electron-builder-config.ts -c.compression=store"
+	},
+	"devDependencies": {
+		"@types/bun": "latest",
+		"@types/react": "^19.1.8",
+		"@types/react-dom": "^19.1.6",
+		"electron": "^37.1.0",
+		"electron-builder": "26.0.12",
+		"tailwindcss": "^4.1.11",
+		"vite": "npm:rolldown-vite@latest"
+	},
+	"peerDependencies": {
+		"typescript": "^5"
+	},
+	"dependencies": {
+		"@headlessui/react": "^2.2.4",
+		"@tailwindcss/vite": "^4.1.11",
+		"@tanstack/react-query": "^5.81.5",
+		"@vitejs/plugin-react-oxc": "^0.2.3",
+		"react": "^19.1.0",
+		"react-dom": "^19.1.0",
+		"react-router": "^7.6.3",
+		"unplugin-auto-import": "^19.3.0",
+		"unplugin-icons": "^22.1.0"
+	}
+}

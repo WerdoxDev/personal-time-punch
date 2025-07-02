@@ -1,0 +1,25 @@
+{
+	"folders": [
+		{
+			"name": "ROOT",
+			"path": "."
+		},
+		{
+			"name": "app",
+			"path": "packages/app"
+		},
+		{
+			"name": "server",
+			"path": "packages/server"
+		}
+	],
+	"settings": {
+		"files.exclude": {
+			"packages/": true
+		},
+		"workbench.editorAssociations": {
+			"*.md": "vscode.markdown.preview.editor"
+		},
+		"typescript.tsdk": "ROOT\\node_modules\\typescript\\lib"
+	}
+}
