@@ -1,1 +1,42 @@
 @import 'tailwindcss';
+
+html,
+body,
+#root {
+	@apply h-full overscroll-none;
+}
+
+@theme inline {
+    --color-background-900: #1B1B1B;
+    --color-background-800: #2C2C2C;
+    --color-background-700: #3C3C3C;
+    --color-primary: #65420A;
+    --color-accent: #EDAE49;
+}
+
+@font-face {
+	font-family: "Noto Sans";
+	src: url("assets/NotoSans.ttf") format("TrueType");
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "Noto Sans";
+	src: url("assets/NotoSansItalic.ttf") format("TrueType");
+	font-style: italic;
+}
+
+:root {
+	font-family: "Noto Sans", "Noto Sans Arabic", sans-serif;
+	-webkit-font-smoothing: none;
+	font-synthesis: none;
+	text-rendering: optimizeLegibility;
+}
+
+.drag-region {
+	app-region: drag;
+}
+
+.no-drag-region {
+	app-region: no-drag;
+}

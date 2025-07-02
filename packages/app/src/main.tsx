@@ -17,6 +17,7 @@ export const queryClient = new QueryClient({
 	},
 });
 
+// biome-ignore lint/style/noNonNullAssertion: react requires a non null root
 ReactDOM.createRoot(root!).render(
 	<QueryClientProvider client={queryClient}>
 		<RouterProvider router={router} />

@@ -6,5 +6,9 @@
 // biome-ignore lint: disable
 export {}
 declare global {
-
+  const IconMingcuteCloseFill: typeof import('~icons/mingcute/close-fill.jsx')['default']
+  const IconMingcuteFullscreenExitFill: typeof import('~icons/mingcute/fullscreen-exit-fill.jsx')['default']
+  const IconMingcuteFullscreenFill: typeof import('~icons/mingcute/fullscreen-fill.jsx')['default']
+  const IconMingcuteLoading3Fill: typeof import('~icons/mingcute/loading3-fill.jsx')['default']
+  const IconMingcuteMinimizeFill: typeof import('~icons/mingcute/minimize-fill.jsx')['default']
 }

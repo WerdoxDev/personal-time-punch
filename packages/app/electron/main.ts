@@ -1,5 +1,5 @@
 import path from "node:path";
-import { app, BrowserWindow, Menu, Tray } from "electron";
+import { app, BrowserWindow, ipcMain, Menu, Tray } from "electron";
 
 const gotLock = app.requestSingleInstanceLock();
 
@@ -40,7 +40,7 @@ function createWindow() {
 		height: 480,
 		fullscreen: false,
 		frame: false,
-		// titleBarStyle: "hidden",
+		titleBarStyle: "hidden",
 		webPreferences: {
 			contextIsolation: true,
 			nodeIntegration: true,
@@ -89,4 +89,60 @@ function configureTray(mainWindow: BrowserWindow) {
 	});
 }
 
-function eventListeners(mainWindow: BrowserWindow) {}
+function eventListeners(mainWindow: BrowserWindow) {
+	mainWindow.on("close", (e) => {
+		console.log("app:electron", "electron:recv", "close");
+
+		e.preventDefault();
+		mainWindow.hide();
+	});
+
+	mainWindow.on("maximize", () => {
+		console.log("app:electron", "electron:recv", "maximize");
+
+		console.log("app:electron", "electron:send", "window is maximized", true);
+		mainWindow.webContents.send("window:is-maximized", true);
+	});
+
+	mainWindow.on("unmaximize", () => {
+		console.log("app:electron", "electron:recv", "unmaximize");
+
+		console.log("app:electron", "electron:send", "window is maximized", false);
+		mainWindow.webContents.send("window:is-maximized", false);
+	});
+
+	mainWindow.on("restore", () => {
+		console.log("app:electron", "electron:recv", "restore");
+
+		console.log("app:electron", "electron:send", "window is maximized", false);
+		mainWindow.webContents.send("window:is-maximized", false);
+	});
+
+	ipcMain.on("window:show-main", () => {
+		console.log("app:electron", "electron:recv", "window show main");
+
+		mainWindow.show();
+	});
+
+	ipcMain.on("window:hide-main", () => {
+		console.log("app:electron", "electron:recv", "window hide main");
+
+		mainWindow.hide();
+	});
+
+	ipcMain.on("window:minimize", () => {
+		console.log("app:electron", "electron:recv", "window minimize");
+
+		mainWindow.minimize();
+	});
+
+	ipcMain.on("window:toggle-maximize", () => {
+		console.log("app:electron", "electron:recv", "window toggle maximize");
+
+		if (mainWindow.isMaximized()) {
+			mainWindow.restore();
+		} else {
+			mainWindow.maximize();
+		}
+	});
+}

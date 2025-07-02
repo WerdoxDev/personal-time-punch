@@ -29,6 +29,7 @@ function createWindow() {
 		height: 480,
 		fullscreen: false,
 		frame: false,
+		titleBarStyle: "hidden",
 		webPreferences: {
 			contextIsolation: true,
 			nodeIntegration: true,
@@ -64,4 +65,42 @@ function configureTray(mainWindow) {
 		mainWindow.show();
 	});
 }
-function eventListeners(mainWindow) {}
+function eventListeners(mainWindow) {
+	mainWindow.on("close", (e) => {
+		console.log("app:electron", "electron:recv", "close");
+		e.preventDefault();
+		mainWindow.hide();
+	});
+	mainWindow.on("maximize", () => {
+		console.log("app:electron", "electron:recv", "maximize");
+		console.log("app:electron", "electron:send", "window is maximized", true);
+		mainWindow.webContents.send("window:is-maximized", true);
+	});
+	mainWindow.on("unmaximize", () => {
+		console.log("app:electron", "electron:recv", "unmaximize");
+		console.log("app:electron", "electron:send", "window is maximized", false);
+		mainWindow.webContents.send("window:is-maximized", false);
+	});
+	mainWindow.on("restore", () => {
+		console.log("app:electron", "electron:recv", "restore");
+		console.log("app:electron", "electron:send", "window is maximized", false);
+		mainWindow.webContents.send("window:is-maximized", false);
+	});
+	electron.ipcMain.on("window:show-main", () => {
+		console.log("app:electron", "electron:recv", "window show main");
+		mainWindow.show();
+	});
+	electron.ipcMain.on("window:hide-main", () => {
+		console.log("app:electron", "electron:recv", "window hide main");
+		mainWindow.hide();
+	});
+	electron.ipcMain.on("window:minimize", () => {
+		console.log("app:electron", "electron:recv", "window minimize");
+		mainWindow.minimize();
+	});
+	electron.ipcMain.on("window:toggle-maximize", () => {
+		console.log("app:electron", "electron:recv", "window toggle maximize");
+		if (mainWindow.isMaximized()) mainWindow.restore();
+		else mainWindow.maximize();
+	});
+}
