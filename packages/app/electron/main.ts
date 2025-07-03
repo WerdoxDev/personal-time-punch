@@ -34,9 +34,9 @@ app.on("window-all-closed", () => {
 function createWindow() {
 	// Create the browser window.
 	const mainWindow = new BrowserWindow({
-		minWidth: 800,
+		minWidth: 480,
 		minHeight: 480,
-		width: 800,
+		width: 480,
 		height: 480,
 		fullscreen: false,
 		frame: false,

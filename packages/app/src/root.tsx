@@ -1,20 +1,7 @@
 import { apiRequest } from "@lib/utils";
 import { apiStore } from "@stores/apiStore";
-// import { PostHogProvider } from "posthog-js/react";
-// import posthog from "posthog-js";
 import { type LoaderFunctionArgs, Outlet, redirect } from "react-router";
 import type { APIGetCurrentUserResult } from "shared";
-
-// FIXME: Posthog seems to not work with react router just yet
-// const posthogClient = posthog.init(import.meta.env.VITE_PUBLIC_POSTHOG_KEY, {
-// 	api_host: import.meta.env.VITE_PUBLIC_POSTHOG_HOST,
-// 	person_profiles: "always",
-// 	autocapture: false,
-// 	capture_pageview: false,
-// });
-
-const findIndex = window.location.hash.indexOf("?");
-const initialPathname = window.location.hash.slice(0, findIndex === -1 ? undefined : findIndex);
 
 export async function rootLoader({ request }: LoaderFunctionArgs) {
 	const pathname = new URL(request.url).pathname;

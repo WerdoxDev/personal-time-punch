@@ -20,3 +20,25 @@ export async function getError(response: Response) {
 		return await response.text();
 	}
 }
+
+export function formatElapsedSeconds(elapsedSeconds: number) {
+	const hours = Math.floor(elapsedSeconds / 3600)
+		.toString()
+		.padStart(2, "0");
+	const minutes = Math.floor((elapsedSeconds % 3600) / 60)
+		.toString()
+		.padStart(2, "0");
+	const seconds = (elapsedSeconds % 60).toString().padStart(2, "0");
+
+	return `${hours}:${minutes}:${seconds}`;
+}
+
+export function formatTimestamp(timestamp: number) {
+	const date = new Date(timestamp ?? 0);
+
+	const hours = date.getHours().toString().padStart(2, "0");
+	const minutes = date.getMinutes().toString().padStart(2, "0");
+	const seconds = date.getSeconds().toString().padStart(2, "0");
+
+	return `${hours}:${minutes}:${seconds}`;
+}
