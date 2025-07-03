@@ -1,3 +1,4 @@
+import InfoModal from "@components/modals/InfoModal";
 import TopBar from "@components/TopBar";
 import { initializeWindow } from "@stores/windowStore";
 import { useEffect } from "react";
@@ -16,6 +17,7 @@ export default function AppLayout() {
 		<div className="flex h-full w-full flex-col bg-slate">
 			<TopBar />
 			<Outlet />
+			<InfoModal />
 		</div>
 	);
 }
