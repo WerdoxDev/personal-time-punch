@@ -7,6 +7,9 @@ export enum ErrorType {
 	PASSWORD_TOO_SHORT = 5,
 	INVALID_EMAIL = 6,
 	UNAUTHORIZED = 7,
+	SERVER_ERROR = 8,
+	INVALID_WORK = 9,
+	NO_PERMISSION = 10
 }
 
 export type PTPError = {

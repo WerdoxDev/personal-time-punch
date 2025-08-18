@@ -22,4 +22,5 @@ export const snowflake = {
 
 export enum WorkerID {
 	AUTH = 0,
+	WORK = 1
 }

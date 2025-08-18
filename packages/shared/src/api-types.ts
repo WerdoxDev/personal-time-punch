@@ -37,3 +37,30 @@ export type TokenPayload = {
 };
 
 export type APIGetCurrentUserResult = APIUser;
+
+export type APIWork = {
+	id: Snowflake;
+	startTime: string | Date;
+	endTime?: string | Date;
+	dayOfWeek: number;
+	notes?: string;
+	createdAt: string | Date;
+	updatedAt: string | Date;
+}
+
+export type APIPostWorkJSONBody = {
+	startTime: string | Date;
+	endTime?: string;
+	dayOfWeek: number | Date;
+	notes?: string;
+}
+
+export type APIPatchWorkJSONBody = {
+	id: Snowflake,
+	endTime?: string
+	notes?: string;
+}
+
+export type APIPatchWorkResult = APIWork;
+export type APIPostWorkResult = APIWork;
+export type APIGetWorkResult = APIWork;
