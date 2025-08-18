@@ -4,7 +4,7 @@ export function apiPath(path: string) {
 	return `${apiHost}${path}`;
 }
 
-export async function apiRequest(path: string, method: "POST" | "GET" | "PATCH", body: unknown, token?: string) {
+export async function apiRequest(path: string, method: "POST" | "GET" | "PATCH", body: unknown, token?: string | null) {
 	return await fetch(apiPath(path), {
 		method,
 		body: body ? JSON.stringify(body) : undefined,

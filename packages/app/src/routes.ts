@@ -2,6 +2,7 @@ import { createHashRouter } from "react-router";
 import Root, { rootLoader } from "./root";
 import App from "./routes/app/app";
 import AppLayout from "./routes/app/app-layout";
+import Panel from "./routes/app/panel";
 import AuthLayout from "./routes/auth/auth-layout";
 import Login from "./routes/auth/login";
 import Register from "./routes/auth/register";
@@ -35,6 +36,10 @@ const router = createHashRouter([
 							{
 								path: "/app",
 								Component: App,
+							},
+							{
+								path: "/panel",
+								Component: Panel,
 							},
 						],
 					},

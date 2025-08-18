@@ -40,3 +40,8 @@ body,
 .no-drag-region {
 	app-region: no-drag;
 }
+
+table {
+	border-collapse: separate;
+	border-spacing: 0;
+}

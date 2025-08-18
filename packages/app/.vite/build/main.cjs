@@ -1,4 +1,4 @@
-const require_chunk = require("./chunk-BdmL_oXl.cjs");
+const require_chunk = require("./chunk-CUT6urMc.cjs");
 const node_path = require_chunk.__toESM(require("node:path"));
 const electron = require_chunk.__toESM(require("electron"));
 const gotLock = electron.app.requestSingleInstanceLock();
@@ -85,6 +85,9 @@ function eventListeners(mainWindow) {
 		console.log("app:electron", "electron:recv", "restore");
 		console.log("app:electron", "electron:send", "window is maximized", false);
 		mainWindow.webContents.send("window:is-maximized", false);
+	});
+	electron.ipcMain.on("window:resize", (_, width, height) => {
+		mainWindow.setSize(width, height);
 	});
 	electron.ipcMain.on("window:show-main", () => {
 		console.log("app:electron", "electron:recv", "window show main");

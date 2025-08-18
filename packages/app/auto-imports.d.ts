@@ -7,6 +7,15 @@
 export {}
 declare global {
   const IconMingcuteAlertLine: typeof import('~icons/mingcute/alert-line.jsx')['default']
+  const IconMingcuteArrowDown2Line: typeof import('~icons/mingcute/arrow-down2-line.jsx')['default']
+  const IconMingcuteArrowDownFill: typeof import('~icons/mingcute/arrow-down-fill.jsx')['default']
+  const IconMingcuteArrowDownLine: typeof import('~icons/mingcute/arrow-down-line.jsx')['default']
+  const IconMingcuteArrowDownLine2: typeof import('~icons/mingcute/arrow-down-line2.jsx')['default']
+  const IconMingcuteArrowDownLine3: typeof import('~icons/mingcute/arrow-down-line3.jsx')['default']
+  const IconMingcuteArrowUp2Line: typeof import('~icons/mingcute/arrow-up2-line.jsx')['default']
+  const IconMingcuteArrowUpFill: typeof import('~icons/mingcute/arrow-up-fill.jsx')['default']
+  const IconMingcuteArrowUpLine: typeof import('~icons/mingcute/arrow-up-line.jsx')['default']
+  const IconMingcuteArrowUpLine2: typeof import('~icons/mingcute/arrow-up-line2.jsx')['default']
   const IconMingcuteCloseFill: typeof import('~icons/mingcute/close-fill.jsx')['default']
   const IconMingcuteFullscreenExitFill: typeof import('~icons/mingcute/fullscreen-exit-fill.jsx')['default']
   const IconMingcuteFullscreenFill: typeof import('~icons/mingcute/fullscreen-fill.jsx')['default']

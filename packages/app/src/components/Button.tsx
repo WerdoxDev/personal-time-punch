@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import type { ReactNode } from "react";
 
-export default function Button(props: { onClick: () => void; className?: string; children?: ReactNode }) {
+export default function Button(props: { onClick?: () => void; className?: string; children?: ReactNode }) {
 	return (
 		<button
 			onClick={props.onClick}

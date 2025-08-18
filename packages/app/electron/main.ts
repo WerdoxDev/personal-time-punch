@@ -118,6 +118,10 @@ function eventListeners(mainWindow: BrowserWindow) {
 		mainWindow.webContents.send("window:is-maximized", false);
 	});
 
+	ipcMain.on("window:resize", (_, width: number, height: number) => {
+		mainWindow.setSize(width, height);
+	})
+
 	ipcMain.on("window:show-main", () => {
 		console.log("app:electron", "electron:recv", "window show main");
 
