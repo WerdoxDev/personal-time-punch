@@ -1,5 +1,6 @@
 import { Prisma } from "@prisma/client";
 import { type APIPostLoginJSONBody, type APIPostRegisterJSONBody, type Snowflake, snowflake, WorkerID } from "shared";
+import { type BigIntToString, idFix } from "../utils";
 import { prisma } from ".";
 import { selectPrivateUser } from "./common";
 
@@ -9,7 +10,7 @@ export const userExtension = Prisma.defineExtension({
 			async getById<Args extends Prisma.UserDefaultArgs>(id: Snowflake, args?: Args) {
 				const user = await prisma.user.findUnique({ where: { id: BigInt(id) }, ...args });
 
-				return user as Prisma.UserGetPayload<Args>;
+				return idFix(user) as BigIntToString<Prisma.UserGetPayload<Args>>;
 			},
 			async findByCredentials(credentials: APIPostLoginJSONBody) {
 				const user = await prisma.user.findFirst({
@@ -24,7 +25,7 @@ export const userExtension = Prisma.defineExtension({
 					select: selectPrivateUser,
 				});
 
-				return user as NonNullable<typeof user>;
+				return idFix(user) as BigIntToString<NonNullable<typeof user>>;
 			},
 			async createUser(user: APIPostRegisterJSONBody) {
 				const newUser = await prisma.user.create({
@@ -39,7 +40,7 @@ export const userExtension = Prisma.defineExtension({
 					select: selectPrivateUser,
 				});
 
-				return newUser;
+				return idFix(newUser);
 			},
 		},
 	},

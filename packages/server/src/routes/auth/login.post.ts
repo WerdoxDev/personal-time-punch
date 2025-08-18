@@ -10,7 +10,7 @@ const schema = z.object({ login: z.string(), password: z.string() });
 createRoute("POST", "/auth/login", validator("json", schema), async (c) => {
 	const body = c.req.valid("json");
 
-	const [error, user] = await tryCatch(async () => idFix(await prisma.user.findByCredentials(body)));
+	const [error, user] = await tryCatch(async () => await prisma.user.findByCredentials(body));
 
 	if (error || !user) {
 		return invalidCredentials(c);

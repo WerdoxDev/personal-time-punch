@@ -40,3 +40,18 @@ export function unauthorized(c: Context) {
 	const error: PTPError = { type: ErrorType.UNAUTHORIZED, message: "Not authorized" };
 	return c.json(error, 403);
 }
+
+export function serverError(c: Context) {
+	const error: PTPError = { type: ErrorType.SERVER_ERROR, message: "Server Error" };
+	return c.json(error, 500);
+}
+
+export function invalidWork(c: Context) {
+	const error: PTPError = { type: ErrorType.INVALID_WORK, message: "Invalid work" };
+	return c.json(error, 400)
+}
+
+export function noPermission(c: Context) {
+	const error: PTPError = { type: ErrorType.NO_PERMISSION, message: "No permission" };
+	return c.json(error, 403);
+}

@@ -1,5 +1,6 @@
 import { Prisma, PrismaClient } from "@prisma/client";
 import { userExtension } from "./user";
+import { workExtension } from "./work";
 
 export const prismaBase = new PrismaClient();
 
@@ -17,4 +18,6 @@ export const prisma = prismaBase
 			},
 		},
 	})
-	.$extends(userExtension);
+	.$extends(userExtension)
+	.$extends(workExtension);
+

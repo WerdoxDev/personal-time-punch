@@ -6,7 +6,7 @@ import { createRoute, idFix, verifyJwt } from "../../utils";
 createRoute("GET", "/users/current", verifyJwt(), async (c) => {
 	const payload = c.get("tokenPayload");
 
-	const user: APIGetCurrentUserResult = idFix(await prisma.user.getById(payload.id, { select: selectPrivateUser }));
+	const user: APIGetCurrentUserResult = await prisma.user.getById(payload.id, { select: selectPrivateUser });
 
 	return c.json(user, 200);
 });

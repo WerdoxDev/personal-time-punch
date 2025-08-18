@@ -32,7 +32,7 @@ createRoute("POST", "/auth/register", validator("json", schema), async (c) => {
 		return emailTaken(c, body.email);
 	}
 
-	const user = idFix(await prisma.user.createUser(body));
+	const user = await prisma.user.createUser(body);
 	const token = await createToken({ id: user.id });
 
 	const json: APIPostRegisterResult = { token, user };

@@ -8,3 +8,8 @@ export const selectPrivateUser = Prisma.validator<Prisma.UserSelect>()({
 	email: true,
 	password: true,
 });
+
+export const selectWork = Prisma.validator<Prisma.WorkSelect>()({
+	id: true,
+	createdAt: true, dayOfWeek: true, endTime: true, notes: true, startTime: true, updatedAt: true
+})

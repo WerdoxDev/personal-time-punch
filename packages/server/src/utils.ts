@@ -29,15 +29,15 @@ export function validator<T extends keyof ValidationTargets, S extends ZodSchema
 	});
 }
 
-type BigIntToString<T> = T extends bigint
+export type BigIntToString<T> = T extends bigint
 	? string
 	: T extends Date
-		? Date
-		: T extends (infer U)[]
-			? BigIntToString<U>[]
-			: T extends object
-				? { [K in keyof T]: BigIntToString<T[K]> }
-				: T;
+	? Date
+	: T extends (infer U)[]
+	? BigIntToString<U>[]
+	: T extends object
+	? { [K in keyof T]: BigIntToString<T[K]> }
+	: T;
 
 export function idFix<T>(obj: T): BigIntToString<T> {
 	if (Array.isArray(obj)) {
