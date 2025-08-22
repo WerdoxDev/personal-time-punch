@@ -15,6 +15,10 @@ export function useUpdateWork() {
             queryClient.setQueryData(["work", json.id], json);
             return json;
         },
+
+        onSuccess() {
+            queryClient.invalidateQueries({ queryKey: ["works"] });
+        }
     });
 
     return mutation;

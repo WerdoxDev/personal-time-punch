@@ -1,3 +1,6 @@
+import CreateWorkModal from "@components/modals/CreateWorkModal";
+import DownloadReportModal from "@components/modals/DownloadReportModal";
+import EditWorkModal from "@components/modals/EditWorkModal";
 import InfoModal from "@components/modals/InfoModal";
 import TopBar from "@components/TopBar";
 import { initializeWindow } from "@stores/windowStore";
@@ -14,10 +17,13 @@ export default function AppLayout() {
 	}, []);
 
 	return (
-		<div className="flex h-full w-full flex-col bg-slate">
+		<div className="flex h-full w-full flex-col overflow-hidden bg-slate">
 			<TopBar />
 			<Outlet />
 			<InfoModal />
+			<CreateWorkModal />
+			<DownloadReportModal />
+			<EditWorkModal />
 		</div>
 	);
 }

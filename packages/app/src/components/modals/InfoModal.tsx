@@ -15,14 +15,30 @@ export default function InfoModal() {
 				<DialogPanel className="flex w-full max-w-xs flex-col items-center rounded-lg bg-background-700 p-5 shadow-xl">
 					{info.status === "info" ? (
 						<IconMingcuteInformationLine className="size-16 text-green-500" />
-					) : (
+					) : info.status === "error" ? (
 						<IconMingcuteAlertLine className="size-16 text-red-500" />
+					) : (
+						<IconMingcuteWarningFill className="size-16 text-amber-500" />
 					)}
 					<DialogTitle className="font-bold text-white text-xl">{info.title}</DialogTitle>
 					<Description className="mt-2.5 text-center text-white/80">{info.text}</Description>
-					<Button onClick={close} className="mt-5">
-						Close
-					</Button>
+					<div className="mt-5 flex w-full items-center justify-center gap-x-2">
+						<Button onClick={close} className="w-full" color="background-900">
+							Close
+						</Button>
+						{info.onConfirm && (
+							<Button
+								onClick={async () => {
+									await info.onConfirm?.();
+									close();
+								}}
+								className="w-full"
+								color="primary"
+							>
+								Confirm
+							</Button>
+						)}
+					</div>
 				</DialogPanel>
 			</div>
 		</Dialog>

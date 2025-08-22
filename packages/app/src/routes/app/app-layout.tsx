@@ -2,7 +2,7 @@ import { Outlet } from "react-router";
 
 export default function AppLayout() {
 	return (
-		<div className="h-full w-full bg-background-900">
+		<div className="absolute inset-0 top-8 overflow-hidden bg-background-900">
 			<Outlet />
 		</div>
 	);

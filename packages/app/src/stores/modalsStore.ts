@@ -1,10 +1,13 @@
 import { produce } from "immer";
-import type { DeepPartial } from "shared";
+import type { APIWork, DeepPartial } from "shared";
 import { createStore, useStore } from "zustand";
 import { combine } from "zustand/middleware";
 
 const initialStore = () => ({
-	info: { isOpen: false, status: "none" as "none" | "info" | "error", title: "", text: "" },
+	info: { isOpen: false, status: "none" as "none" | "info" | "error" | "warn", title: "", text: "", onConfirm: undefined as (() => (void) | Promise<void>) | undefined },
+	createWork: { isOpen: false },
+	editWork: { isOpen: false, work: undefined as APIWork | undefined },
+	downloadReport: { isOpen: false }
 });
 
 type StoreType = ReturnType<typeof initialStore>;

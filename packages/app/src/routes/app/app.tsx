@@ -1,76 +1,79 @@
 import Button from "@components/Button";
+import { Dropdown } from "@components/Dropdown";
 import { useCreateWork } from "@hooks/useCreateWork";
 import { useLogout } from "@hooks/useLogout";
 import { useUpdateWork } from "@hooks/useUpdateWork";
-import { getWorkOptions } from "@lib/queries";
-import { formatElapsedSeconds, formatTimestamp } from "@lib/utils";
+import { getLatestWorkOptions } from "@lib/queries";
+import type { DropdownOption } from "@lib/types";
 import { useAPI } from "@stores/apiStore";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useMemo, useState } from "react";
+import moment from "moment";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
+import { WorkType } from "shared";
 
-type DayStatus = "running" | "paused" | "stopped";
+const typeOptions: DropdownOption<WorkType>[] = [
+	{ text: "Onsite", value: WorkType.ONSITE },
+	{ text: "Remote", value: WorkType.REMOTE },
+];
 
 export default function App() {
 	const { user } = useAPI();
-	const logout = useLogout();
 	const navigate = useNavigate();
-	const workId = localStorage.getItem("work-id") ?? "";
-	const hasWorkId = !!workId;
-	const { data, isLoading, error } = useQuery(getWorkOptions(workId, hasWorkId));
+	const { data, isLoading, refetch } = useQuery(getLatestWorkOptions());
 	const createWorkMutation = useCreateWork();
 	const updateWorkMutation = useUpdateWork();
+	const logout = useLogout();
 
-	const startTimestamp = useMemo(() => (data ? new Date(data.startTime).getTime() : undefined), [data]);
-	const endTimestamp = useMemo(() => (data?.endTime ? new Date(data.endTime).getTime() : undefined), [data]);
+	const [startTimestamp, setStartTimestamp] = useState<number | undefined>(undefined);
+	const [endTimestamp, setEndTimestamp] = useState<number | undefined>(undefined);
 
-	const [status, setStatus] = useState<DayStatus>((localStorage.getItem("status") as DayStatus) ?? "stopped");
+	const [isRunning, setIsRunning] = useState(false);
 	const [elapsed, setElapsed] = useState(0);
 
-	const formattedTime = useMemo(() => formatElapsedSeconds(elapsed), [elapsed]);
-	const formattedStartTime = useMemo(() => formatTimestamp(startTimestamp ?? 0), [startTimestamp]);
-	const formattedEndTime = useMemo(() => formatTimestamp(endTimestamp ?? 0), [endTimestamp]);
+	const [type, setType] = useState<DropdownOption<WorkType>>(typeOptions[0]);
 
-	async function beginDay() {
-		const dayOfWeek = new Date().getDay();
-
+	async function startSession() {
 		if (createWorkMutation.isPending) {
 			return;
 		}
 
-		const createdWork = await createWorkMutation.mutateAsync({ startTime: new Date().toISOString(), dayOfWeek });
+		const createdWork = await createWorkMutation.mutateAsync({
+			timeOfEntry: new Date().toISOString(),
+			type: type.value,
+		});
 
 		if (createdWork) {
-			localStorage.setItem("work-id", createdWork.id);
-		}
+			await refetch();
 
-		setStatus("running");
+			setStartTimestamp(new Date(createdWork.timeOfEntry).getTime());
+			setEndTimestamp(undefined);
+		}
 	}
 
-	async function endDay() {
-		if (updateWorkMutation.isPending) {
+	async function endSession() {
+		if (updateWorkMutation.isPending || !data) {
 			return;
 		}
 
-		await updateWorkMutation.mutateAsync({ id: workId, endTime: new Date().toISOString() });
+		const updatedWork = await updateWorkMutation.mutateAsync({ id: data.id, timeOfExit: new Date().toISOString() });
 
-		setStatus("stopped");
+		if (updatedWork?.timeOfExit) {
+			await refetch();
+			setIsRunning(false);
+
+			setEndTimestamp(new Date(updatedWork.timeOfExit).getTime());
+		}
 	}
 
 	async function goToPanel() {
 		await navigate("/panel");
-		window.electronAPI.resize(1200, 680);
+		window.electronAPI.resize(1050, 800);
 	}
 
 	useEffect(() => {
-		localStorage.setItem("status", status);
-
-		if (status !== "running") {
+		if (!isRunning) {
 			setElapsed(Math.floor(((endTimestamp ?? 0) - (startTimestamp ?? 0)) / 1000));
-			return;
-		}
-
-		if (!data) {
 			return;
 		}
 
@@ -87,19 +90,30 @@ export default function App() {
 		return () => {
 			clearInterval(interval);
 		};
-	}, [status, data]);
+	}, [isRunning]);
 
 	useEffect(() => {
-		if (error) {
-			localStorage.removeItem("work-id");
-			setStatus("stopped");
+		if (data) {
+			setStartTimestamp(new Date(data.timeOfEntry).getTime());
 		}
-	}, [error]);
+		if (data && !data?.timeOfExit) {
+			setIsRunning(true);
+		}
+	}, [data]);
+
+	useEffect(() => {
+		window.electronAPI.resize(480, 480);
+	}, []);
 
 	return (
 		<div className="relative flex h-full flex-col items-center justify-between">
 			<div className="mt-10 text-2xl text-white">
-				Welcome <span className="text-accent">{user?.username}</span>
+				Welcome <span className="font-bold text-accent">{user?.username}</span>
+			</div>
+			<div className="absolute top-2 right-2">
+				<button onClick={() => logout()} type="button" className="cursor-pointer rounded-md bg-rose-400 p-1">
+					<IconMingcuteExitFill className="text-white" />
+				</button>
 			</div>
 			<div className="pointer-events-none absolute inset-0 flex items-center justify-center">
 				<div className="flex flex-col items-start">
@@ -107,33 +121,38 @@ export default function App() {
 						<div className="text-white text-xl">Loading...</div>
 					) : (
 						<>
-							<div className="font-bold text-5xl text-white">{formattedTime}</div>
-							{startTimestamp ? <div className="text-white/50 text-xl">Begin: {formattedStartTime}</div> : null}
-							{endTimestamp ? <div className="text-white/50 text-xl">End: {formattedEndTime}</div> : null}
+							<div className="font-bold text-5xl text-white">{moment.utc(elapsed * 1000).format("H[h] m[m] ss[s]")}</div>
+							{startTimestamp ? <div className="text-white/50 text-xl">Entry: {moment(startTimestamp).format("DD.MM.YYYY HH:mm")}</div> : null}
+							{endTimestamp ? <div className="text-white/50 text-xl">Exit: {moment(endTimestamp).format("DD.MM.YYYY HH:mm")}</div> : null}
 						</>
 					)}
 				</div>
 			</div>
 			{!isLoading && (
-				<div className="mb-5 flex flex-col gap-y-2">
-					{status === "stopped" && (
-						<Button className="h-10 text-lg" onClick={beginDay}>
-							Begin day
-						</Button>
-					)}
-					{status === "running" && (
-						<Button className="h-10 text-lg" onClick={endDay}>
-							End day
-						</Button>
-					)}
-					<Button onClick={goToPanel} className="h-10 text-lg">
+				<div className="flex w-full items-end p-5">
+					<Button color="primary" onClick={goToPanel} className="h-10 w-max text-lg">
 						Go to Panel
 					</Button>
+					<div className="ml-auto flex flex-col gap-y-2">
+						{!isRunning && (
+							<>
+								<div className="flex flex-col gap-y-1">
+									<div className="shrink-0 text-sm text-white/80">Session Type:</div>
+									<Dropdown selected={type} onChange={setType} color="background-800" options={typeOptions} anchor={{ padding: 0 }} />
+								</div>
+								<Button color="primary" className="h-10 w-max text-lg" onClick={startSession}>
+									Start session
+								</Button>
+							</>
+						)}
+						{isRunning && (
+							<Button color="primary" className="h-10 w-max text-lg" onClick={endSession}>
+								End session
+							</Button>
+						)}
+					</div>
 				</div>
 			)}
-			{/* <Button onClick={logout} className="w-max">
-				Logout
-			</Button> */}
 		</div>
 	);
 }

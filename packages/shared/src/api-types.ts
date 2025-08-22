@@ -38,29 +38,41 @@ export type TokenPayload = {
 
 export type APIGetCurrentUserResult = APIUser;
 
+export enum WorkType {
+	ONSITE = 0,
+	REMOTE = 1,
+	ABSENT = 2,
+	VACATION = 3
+}
+
 export type APIWork = {
 	id: Snowflake;
-	startTime: string | Date;
-	endTime?: string | Date;
-	dayOfWeek: number;
-	notes?: string;
-	createdAt: string | Date;
-	updatedAt: string | Date;
+	timeOfEntry: string | Date;
+	timeOfExit?: string | Date;
+	type: WorkType;
 }
 
 export type APIPostWorkJSONBody = {
-	startTime: string | Date;
-	endTime?: string;
-	dayOfWeek: number | Date;
-	notes?: string;
+	timeOfEntry: string | Date;
+	timeOfExit?: string | Date;
+	type: WorkType;
+}
+
+export type APIPostReportJSONBody = {
+	startDate: string;
+	endDate: string;
 }
 
 export type APIPatchWorkJSONBody = {
 	id: Snowflake,
-	endTime?: string
-	notes?: string;
+	timeOfExit?: string
+	timeOfEntry?: string;
+	type?: WorkType;
 }
 
+export type APIDeleteWorkResult = APIWork;
 export type APIPatchWorkResult = APIWork;
 export type APIPostWorkResult = APIWork;
 export type APIGetWorkResult = APIWork;
+export type APIGetLatestWorkResult = APIWork | null;
+export type APIGetWorksResult = APIWork[];

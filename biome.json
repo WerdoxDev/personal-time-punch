@@ -23,7 +23,7 @@
 		"rules": {
 			"recommended": true,
 			"correctness": { "useExhaustiveDependencies": "off" },
-			"a11y": { "useKeyWithClickEvents": "off", "useMediaCaption": "off" },
+			"a11y": { "useKeyWithClickEvents": "off", "useMediaCaption": "off", "noStaticElementInteractions": "off" },
 			"nursery": { "useSortedClasses": { "fix": "safe", "level": "info", "options": {} } },
 			"style": {
 				"noParameterAssign": "off",

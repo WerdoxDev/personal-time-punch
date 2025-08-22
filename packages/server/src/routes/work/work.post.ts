@@ -1,23 +1,24 @@
-import type { APIPostWorkResult } from "shared";
+import { type APIPostWorkResult, WorkType } from "shared";
 import z from "zod";
 import { prisma } from "../../database";
 import { selectWork } from "../../database/common";
-import { invalidBody, serverError } from "../../errors";
+import { serverError } from "../../errors";
 import { createRoute, tryCatch, validator, verifyJwt } from "../../utils";
 
-const schema = z.object({ startTime: z.string(), endTime: z.optional(z.string()), dayOfWeek: z.number(), notes: z.optional(z.string()) });
+const schema = z.object({ timeOfEntry: z.string(), timeOfExit: z.optional(z.string()), type: z.number() });
 
 createRoute("POST", "/work", verifyJwt(), validator("json", schema), async (c) => {
     const body = c.req.valid("json");
     const payload = c.get("tokenPayload");
 
-    if (body.dayOfWeek < 1 || body.dayOfWeek > 7) {
-        return invalidBody(c);
-    }
-
     const [error, work] = await tryCatch(async () =>
         prisma.work.createWork(
-            { userId: payload.id, dayOfWeek: body.dayOfWeek, startTime: body.startTime, endTime: body.endTime, notes: body.notes },
+            {
+                userId: payload.id,
+                timeOfEntry: body.timeOfEntry,
+                timeOfExit: body.type === WorkType.ABSENT || body.type === WorkType.VACATION ? undefined : body.timeOfExit,
+                type: body.type,
+            },
             { select: selectWork },
         ),
     );

@@ -11,5 +11,7 @@ export const selectPrivateUser = Prisma.validator<Prisma.UserSelect>()({
 
 export const selectWork = Prisma.validator<Prisma.WorkSelect>()({
 	id: true,
-	createdAt: true, dayOfWeek: true, endTime: true, notes: true, startTime: true, updatedAt: true
+	timeOfExit: true,
+	timeOfEntry: true,
+	type: true
 })
