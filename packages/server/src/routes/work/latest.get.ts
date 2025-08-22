@@ -8,7 +8,7 @@ createRoute("GET", "/work/latest", verifyJwt(), async (c) => {
     const payload = c.get("tokenPayload");
 
     const [error, work] = await tryCatch(async () =>
-        idFix(await prisma.work.findFirst({ where: { timeOfExit: null, userId: BigInt(payload.id) }, select: selectWork })),
+        idFix(await prisma.work.findFirst({ orderBy: { id: "desc" }, where: { timeOfExit: null, type: { in: [0, 1] }, userId: BigInt(payload.id) }, select: selectWork })),
     );
 
     if (error) {

@@ -1,0 +1,8 @@
+services:
+  backend:
+    image: ptp-backend
+    build: .
+    container_name: ptp-backend
+    network_mode: host
+    env_file:
+      - ./packages/server/.env

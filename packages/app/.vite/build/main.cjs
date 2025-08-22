@@ -45,7 +45,6 @@ function createWindow() {
 		console.log("app:electron", "electron:default", "load", "url:", filePath);
 		mainWindow.loadFile(filePath);
 	}
-	mainWindow.webContents.openDevTools({ mode: "undocked" });
 	eventListeners(mainWindow);
 	configureTray(mainWindow);
 }

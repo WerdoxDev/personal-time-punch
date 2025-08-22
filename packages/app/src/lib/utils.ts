@@ -1,4 +1,4 @@
-export const apiHost = "http://localhost:3000";
+export const apiHost = "http://192.168.0.89:3001";
 
 export function apiPath(path: string) {
 	return `${apiHost}${path}`;
