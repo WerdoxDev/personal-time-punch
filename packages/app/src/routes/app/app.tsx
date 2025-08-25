@@ -173,12 +173,12 @@ export default function App() {
 							<div className="font-bold text-5xl text-white">{moment.utc(elapsed * 1000).format("H[h] m[m] ss[s]")}</div>
 							{startTimestamp ? (
 								<div className="text-white/50 text-xl">
-									{language.entry}: {moment(startTimestamp).format("DD.MM.YYYY HH:mm")}
+									{language.entry}: {moment(startTimestamp).format("DD.MM.YYYY [-] HH:mm")}
 								</div>
 							) : null}
 							{endTimestamp ? (
 								<div className="text-white/50 text-xl">
-									{language.exit}: {moment(endTimestamp).format("DD.MM.YYYY HH:mm")}
+									{language.exit}: {moment(endTimestamp).format("DD.MM.YYYY [-] HH:mm")}
 								</div>
 							) : null}
 						</>

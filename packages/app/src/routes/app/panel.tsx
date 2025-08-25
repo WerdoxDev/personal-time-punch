@@ -92,12 +92,12 @@ export default function Panel() {
 							<div className="flex items-center gap-x-1">
 								<IconMingcuteArrowLeftUpFill className="size-5 text-red-400" />
 								<div>
-									{duration.asHours() > 24 ? moment(value).format("DD. MMM YYYY HH:mm") : moment(value).format("HH:mm")}
+									{duration.asHours() > 24 ? moment(value).format("DD. MMM YYYY [-] HH:mm") : moment(value).format("HH:mm")}
 									<span className="text-white/80"> ({duration.humanize()})</span>
 								</div>
 							</div>
 						) : (
-							<span className="text-white/80 italic">Not finished</span>
+							<span className="text-white/80 italic">{language.not_finished}</span>
 						)
 					) : (
 						<div>-</div>
