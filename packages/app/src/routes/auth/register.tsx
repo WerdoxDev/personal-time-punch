@@ -3,6 +3,7 @@ import Input from "@components/Input";
 import LoadingButton from "@components/LoadingButton";
 import { apiRequest, getError } from "@lib/utils";
 import { useAPI } from "@stores/apiStore";
+import { useLanguage } from "@stores/languageStore";
 import { useModals } from "@stores/modalsStore";
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
@@ -13,6 +14,7 @@ export default function Register() {
 	const navigate = useNavigate();
 	const { updateModals } = useModals();
 	const { initialize } = useAPI();
+	const { language } = useLanguage();
 
 	const [username, setUsername] = useState<string>("");
 	const [firstName, setFirstName] = useState<string>("");
@@ -39,7 +41,9 @@ export default function Register() {
 			return response;
 		},
 		onError(error: PTPError) {
-			updateModals({ info: { isOpen: true, status: "error", text: error.message, title: "Register failed" } });
+			updateModals({
+				info: { isOpen: true, status: "error", text: language[error.type as keyof typeof language], title: language.register_failed },
+			});
 		},
 		async onSuccess(response) {
 			const data: APIPostRegisterResult = await response.json();
@@ -52,7 +56,7 @@ export default function Register() {
 
 	async function register() {
 		if (!username || !firstName || !lastName || !email || !password) {
-			updateModals({ info: { isOpen: true, status: "error", text: "Please fill all the fields", title: "Register failed" } });
+			updateModals({ info: { isOpen: true, status: "error", text: language.fill_all_fields, title: language.login_failed } });
 			return;
 		}
 
@@ -70,28 +74,28 @@ export default function Register() {
 				<div className="flex w-full flex-col items-center justify-center gap-y-1">
 					<Icon className="size-14 text-accent" />
 					<div className="text-center font-semibold text-white text-xl">
-						Welcome to <span className="text-accent">PTP</span>
+						{language.welcome_to} <span className="text-accent">PTP</span>
 					</div>
 					<div className="text-center text-sm text-white/50">
-						Already have an account?{" "}
+						{language.already_have_account}{" "}
 						<Link to="/login" className="text-accent/80 hover:underline">
-							Login
+							{language.login}
 						</Link>
 					</div>
 				</div>
 				<div className="mt-8 flex flex-col gap-y-5">
-					<Input label="Username" placeholder="e.g Matin" value={username} onChange={setUsername} />
+					<Input label={language.username} placeholder="e.g Matin" value={username} onChange={setUsername} />
 					<div className="flex items-center justify-center gap-x-3">
-						<Input label="First name" value={firstName} onChange={setFirstName} />
-						<Input label="Last name" value={lastName} onChange={setLastName} />
+						<Input label={language.first_name} value={firstName} onChange={setFirstName} />
+						<Input label={language.last_name} value={lastName} onChange={setLastName} />
 					</div>
-					<Input label="Email" placeholder="example@gmail.com" value={email} onChange={setEmail} />
-					<Input label="Password" type="password" value={password} onChange={setPassword} />
+					<Input label={language.email} placeholder="example@gmail.com" value={email} onChange={setEmail} />
+					<Input label={language.password} type="password" value={password} onChange={setPassword} />
 				</div>
 
 				<div className="mt-3">
 					<LoadingButton type="submit" loading={isPending}>
-						Register
+						{language.register}
 					</LoadingButton>
 				</div>
 			</div>

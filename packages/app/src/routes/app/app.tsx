@@ -6,17 +6,13 @@ import { useUpdateWork } from "@hooks/useUpdateWork";
 import { getLatestWorkOptions } from "@lib/queries";
 import type { DropdownOption } from "@lib/types";
 import { useAPI } from "@stores/apiStore";
+import { useLanguage } from "@stores/languageStore";
 import { useModals } from "@stores/modalsStore";
 import { useQuery } from "@tanstack/react-query";
 import moment from "moment";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router";
 import { WorkType } from "shared";
-
-const typeOptions: DropdownOption<WorkType>[] = [
-	{ text: "Onsite", value: WorkType.ONSITE },
-	{ text: "Remote", value: WorkType.REMOTE },
-];
 
 export default function App() {
 	const { user } = useAPI();
@@ -26,6 +22,15 @@ export default function App() {
 	const updateWorkMutation = useUpdateWork();
 	const logout = useLogout();
 	const { updateModals } = useModals();
+	const { language, currentLanguage, setLanguage } = useLanguage();
+
+	const typeOptions = useMemo<DropdownOption<WorkType>[]>(
+		() => [
+			{ text: language.onsite, value: WorkType.ONSITE },
+			{ text: language.remote, value: WorkType.REMOTE },
+		],
+		[currentLanguage],
+	);
 
 	const [startTimestamp, setStartTimestamp] = useState<number | undefined>(undefined);
 	const [endTimestamp, setEndTimestamp] = useState<number | undefined>(undefined);
@@ -97,6 +102,18 @@ export default function App() {
 		});
 	}
 
+	function switchLanguage() {
+		if (currentLanguage === "en") {
+			setLanguage("de");
+		} else {
+			setLanguage("en");
+		}
+	}
+
+	useEffect(() => {
+		setType(typeOptions[0]);
+	}, [currentLanguage]);
+
 	useEffect(() => {
 		if (!isRunning) {
 			setElapsed(Math.floor(((endTimestamp ?? 0) - (startTimestamp ?? 0)) / 1000));
@@ -134,23 +151,36 @@ export default function App() {
 	return (
 		<div className="relative flex h-full flex-col items-center justify-between">
 			<div className="mt-10 text-2xl text-white">
-				Welcome <span className="font-bold text-accent">{user?.username}</span>
+				{language.welcome} <span className="font-bold text-accent">{user?.username}</span>
 			</div>
-			<button onClick={() => logout()} type="button" className="absolute top-2 right-2 cursor-pointer rounded-md bg-rose-400 p-1">
-				<IconMingcuteExitFill className="text-white" />
-			</button>
+			<div className="absolute top-2 right-2 flex items-center justify-center gap-x-2">
+				<button onClick={switchLanguage} type="button" className="cursor-pointer rounded-md">
+					{currentLanguage === "de" ? <IconTwemojiFlagUnitedKingdom className="size-7" /> : <IconTwemojiFlagGermany className="size-7" />}
+				</button>
+				<button onClick={() => logout()} type="button" className="cursor-pointer rounded-md bg-rose-400 p-1">
+					<IconMingcuteExitFill className="text-white" />
+				</button>
+			</div>
 			<button onClick={() => about()} type="button" className="absolute top-2 left-2 cursor-pointer rounded-md bg-green-500 p-1">
 				<IconMingcuteInformationFill className="text-white" />
 			</button>
 			<div className="pointer-events-none absolute inset-0 flex items-center justify-center">
 				<div className="flex flex-col items-start">
 					{isLoading ? (
-						<div className="text-white text-xl">Loading...</div>
+						<div className="text-white text-xl">{language.loading}...</div>
 					) : (
 						<>
 							<div className="font-bold text-5xl text-white">{moment.utc(elapsed * 1000).format("H[h] m[m] ss[s]")}</div>
-							{startTimestamp ? <div className="text-white/50 text-xl">Entry: {moment(startTimestamp).format("DD.MM.YYYY HH:mm")}</div> : null}
-							{endTimestamp ? <div className="text-white/50 text-xl">Exit: {moment(endTimestamp).format("DD.MM.YYYY HH:mm")}</div> : null}
+							{startTimestamp ? (
+								<div className="text-white/50 text-xl">
+									{language.entry}: {moment(startTimestamp).format("DD.MM.YYYY HH:mm")}
+								</div>
+							) : null}
+							{endTimestamp ? (
+								<div className="text-white/50 text-xl">
+									{language.exit}: {moment(endTimestamp).format("DD.MM.YYYY HH:mm")}
+								</div>
+							) : null}
 						</>
 					)}
 				</div>
@@ -158,23 +188,23 @@ export default function App() {
 			{!isLoading && (
 				<div className="flex w-full items-end p-5">
 					<Button color="primary" onClick={goToPanel} className="h-10 w-max text-lg">
-						Go to Panel
+						{language.panel}
 					</Button>
 					<div className="ml-auto flex flex-col gap-y-2">
 						{!isRunning && (
 							<>
 								<div className="flex flex-col gap-y-1">
-									<div className="shrink-0 text-sm text-white/80">Session Type:</div>
+									<div className="shrink-0 text-sm text-white/80">{language.session_type}:</div>
 									<Dropdown selected={type} onChange={setType} color="background-800" options={typeOptions} anchor={{ padding: 0 }} />
 								</div>
 								<Button color="primary" className="h-10 w-max text-lg" onClick={startSession}>
-									Start session
+									{language.start_session}
 								</Button>
 							</>
 						)}
 						{isRunning && (
 							<Button color="primary" className="h-10 w-max text-lg" onClick={endSession}>
-								End session
+								{language.end_session}
 							</Button>
 						)}
 					</div>

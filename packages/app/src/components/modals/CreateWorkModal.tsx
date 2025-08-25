@@ -3,8 +3,9 @@ import { Dropdown } from "@components/Dropdown";
 import { Description, Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { useCreateWork } from "@hooks/useCreateWork";
 import type { DropdownOption } from "@lib/types";
+import { useLanguage } from "@stores/languageStore";
 import { useModals } from "@stores/modalsStore";
-import { type ChangeEvent, useEffect, useState } from "react";
+import { type ChangeEvent, useEffect, useMemo, useState } from "react";
 import { WorkType } from "shared";
 
 const hourOptions: DropdownOption<number>[] = [
@@ -49,15 +50,19 @@ const minuteOptions: DropdownOption<number>[] = [
 	{ text: "55", value: 55 },
 ];
 
-const typeOptions: DropdownOption<WorkType>[] = [
-	{ text: "Remote", value: WorkType.REMOTE },
-	{ text: "Onsite", value: WorkType.ONSITE },
-	{ text: "Absent", value: WorkType.ABSENT },
-	{ text: "Vacation", value: WorkType.VACATION },
-];
-
 export default function CreateWorkModal() {
 	const { createWork: modal, updateModals } = useModals();
+	const { language, currentLanguage } = useLanguage();
+
+	const typeOptions = useMemo<DropdownOption<WorkType>[]>(
+		() => [
+			{ text: language.remote, value: WorkType.REMOTE },
+			{ text: language.onsite, value: WorkType.ONSITE },
+			{ text: language.absent, value: WorkType.ABSENT },
+			{ text: language.vacation, value: WorkType.VACATION },
+		],
+		[currentLanguage],
+	);
 
 	const [date, setDate] = useState<string | undefined>(undefined);
 
@@ -76,6 +81,10 @@ export default function CreateWorkModal() {
 			reset();
 		}
 	}, [modal.isOpen]);
+
+	useEffect(() => {
+		setType(typeOptions[0]);
+	}, [currentLanguage]);
 
 	function onDateChange(e: ChangeEvent) {
 		setDate((e.target as HTMLInputElement).value);
@@ -101,7 +110,7 @@ export default function CreateWorkModal() {
 
 		if (entryHour.value > exitHour.value || (entryHour.value === exitHour.value && entryMinute.value > exitMinute.value)) {
 			updateModals({
-				info: { isOpen: true, onConfirm: undefined, status: "warn", title: "Incorrect date", text: "Entry time cannot be after exit time" },
+				info: { isOpen: true, onConfirm: undefined, status: "warn", title: language.incorrect_date_title, text: language.incorrect_date_text },
 			});
 			return;
 		}
@@ -124,16 +133,16 @@ export default function CreateWorkModal() {
 	return (
 		<Dialog open={modal.isOpen} onClose={close} transition className="relative z-50">
 			<div className="fixed inset-0 top-8 flex w-screen items-center justify-center bg-black/40">
-				<DialogPanel className="flex w-full max-w-xs flex-col items-center rounded-lg bg-background-700 p-5 shadow-xl">
-					<DialogTitle className="font-bold text-white text-xl">Create Work Record</DialogTitle>
-					<Description className="text-center text-white/80">Manually create a new work record</Description>
+				<DialogPanel className="flex w-full max-w-sm flex-col items-center rounded-lg bg-background-700 p-5 shadow-xl">
+					<DialogTitle className="text-center font-bold text-white text-xl">{language.create_work_record}</DialogTitle>
+					<Description className="mt-2 text-center text-white/80">{language.create_work_record_desc}</Description>
 					<div className="mt-5 flex w-full select-none flex-col gap-y-2">
 						<div className="flex flex-col gap-y-1">
-							<div className="shrink-0 text-sm text-white/80">Type:</div>
+							<div className="shrink-0 text-sm text-white/80">{language.type}:</div>
 							<Dropdown selected={type} onChange={setType} color="background-800" options={typeOptions} className="w-max" />
 						</div>
 						<div className="flex flex-col gap-y-1">
-							<div className="shrink-0 text-sm text-white/80">Date:</div>
+							<div className="shrink-0 text-sm text-white/80">{language.date}:</div>
 							<div className="relative">
 								<input
 									type="date"
@@ -146,7 +155,7 @@ export default function CreateWorkModal() {
 						{(type.value === WorkType.ONSITE || type.value === WorkType.REMOTE) && (
 							<div className="flex w-full gap-x-2">
 								<div className="flex w-full flex-col gap-y-1">
-									<div className="shrink-0 text-sm text-white/80">Entry Time:</div>
+									<div className="shrink-0 text-sm text-white/80">{language.entry_time}:</div>
 									<div className="flex items-center justify-center gap-x-1 rounded-md bg-background-900 p-1">
 										<Dropdown selected={entryHour} onChange={setEntryHour} color="background-800" options={hourOptions} />
 										<div className="text-white">:</div>
@@ -154,7 +163,7 @@ export default function CreateWorkModal() {
 									</div>
 								</div>
 								<div className="flex w-full flex-col gap-y-1">
-									<div className="shrink-0 text-sm text-white/80">Exit Time:</div>
+									<div className="shrink-0 text-sm text-white/80">{language.exit_time}:</div>
 									<div className="flex items-center justify-center gap-x-1 rounded-md bg-background-900 p-1">
 										<Dropdown selected={exitHour} onChange={setExitHour} color="background-800" options={hourOptions} />
 										<div className="text-white">:</div>
@@ -163,15 +172,13 @@ export default function CreateWorkModal() {
 								</div>
 							</div>
 						)}
-						{/* {mode === "entry" && <ClockFace time={entryTime} onTimeChanged={setEntryTime} />}
-						{mode === "exit" && <ClockFace time={exitTime} onTimeChanged={setExitTime} />} */}
 					</div>
 					<div className="mt-5 flex w-full gap-x-2">
 						<Button onClick={close} color="background-800">
-							Cancel
+							{language.cancel}
 						</Button>
 						<Button onClick={create} color="primary">
-							Create
+							{language.create}
 						</Button>
 					</div>
 				</DialogPanel>

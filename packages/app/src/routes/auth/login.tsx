@@ -3,6 +3,7 @@ import Input from "@components/Input";
 import LoadingButton from "@components/LoadingButton";
 import { apiRequest, getError } from "@lib/utils";
 import { useAPI } from "@stores/apiStore";
+import { useLanguage } from "@stores/languageStore";
 import { useModals } from "@stores/modalsStore";
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
@@ -13,6 +14,7 @@ export default function Login() {
 	const navigate = useNavigate();
 	const { updateModals } = useModals();
 	const { initialize } = useAPI();
+	const { language } = useLanguage();
 
 	const [usernameOrEmail, setUsernameOrEmail] = useState<string>("");
 	const [password, setPassword] = useState<string>("");
@@ -33,7 +35,7 @@ export default function Login() {
 			return response;
 		},
 		onError(error: PTPError) {
-			updateModals({ info: { isOpen: true, status: "error", text: error.message ?? error, title: "Login failed" } });
+			updateModals({ info: { isOpen: true, status: "error", text: language[error.type as keyof typeof language], title: language.login_failed } });
 		},
 		async onSuccess(response) {
 			const data: APIPostLoginResult = await response.json();
@@ -46,7 +48,7 @@ export default function Login() {
 
 	async function login() {
 		if (!login || !password) {
-			updateModals({ info: { isOpen: true, status: "error", text: "Please fill all the fields", title: "Login failed" } });
+			updateModals({ info: { isOpen: true, status: "error", text: language.fill_all_fields, title: language.login_failed } });
 			return;
 		}
 
@@ -64,22 +66,22 @@ export default function Login() {
 				<div className="flex w-full flex-col items-center justify-center gap-y-1">
 					<Icon className="size-14 text-accent" />
 					<div className="text-center font-semibold text-white text-xl">
-						Welcome back to <span className="text-accent">PTP</span>
+						{language.welcome_back} <span className="text-accent">PTP</span>
 					</div>
 					<div className="text-center text-sm text-white/50">
-						Don't have an account?{" "}
+						{language.dont_have_account}{" "}
 						<Link to="/register" className="text-accent/80 hover:underline">
-							Register
+							{language.register}
 						</Link>
 					</div>
 				</div>
 				<div className="mt-8 flex flex-col gap-y-5">
-					<Input label="Email / Username" value={usernameOrEmail} onChange={setUsernameOrEmail} />
-					<Input label="Password" type="password" value={password} onChange={setPassword} />
+					<Input label={`${language.email} / ${language.username}`} value={usernameOrEmail} onChange={setUsernameOrEmail} />
+					<Input label={language.password} type="password" value={password} onChange={setPassword} />
 				</div>
 				<div className="mt-3">
 					<LoadingButton type="submit" loading={isPending}>
-						Login
+						{language.login}
 					</LoadingButton>
 				</div>
 			</div>

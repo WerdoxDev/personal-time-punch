@@ -2,6 +2,7 @@ import Button from "@components/Button";
 import { useDeleteWork } from "@hooks/useDeleteWork";
 import { getWorksOptions } from "@lib/queries";
 import type { AppWork } from "@lib/types";
+import { useLanguage } from "@stores/languageStore";
 import { useModals } from "@stores/modalsStore";
 import { useQuery } from "@tanstack/react-query";
 import { type ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, type Row, type SortingState, useReactTable } from "@tanstack/react-table";
@@ -38,13 +39,14 @@ export default function Panel() {
 	);
 	const navigate = useNavigate();
 	const { updateModals } = useModals();
+	const { language, currentLanguage } = useLanguage();
 	const columns = useMemo<ColumnDef<AppWork>[]>(
 		() => [
 			{
 				accessorKey: "date",
 				cell: (info) => moment(info.getValue() as string).format("DD MMM YYYY"),
 				sortingFn: sortDate,
-				header: "Date",
+				header: language.date,
 				minSize: 140,
 				id: "date",
 			},
@@ -54,7 +56,7 @@ export default function Panel() {
 					moment()
 						.day(info.getValue() as number)
 						.format("ddd"),
-				header: "Day of Week",
+				header: language.day_of_week,
 				minSize: 150,
 			},
 			{
@@ -72,7 +74,7 @@ export default function Panel() {
 						<div>-</div>
 					);
 				},
-				header: "Entry",
+				header: language.entry,
 				sortingFn: sortDate,
 				minSize: 100,
 			},
@@ -101,7 +103,7 @@ export default function Panel() {
 						<div>-</div>
 					);
 				},
-				header: "Exit",
+				header: language.exit,
 				sortingFn: sortDate,
 				id: "timeOfExit",
 				minSize: 250,
@@ -109,37 +111,40 @@ export default function Panel() {
 			{
 				accessorKey: "type",
 				cell: (info) =>
-					({ [WorkType.ABSENT]: "Absent", [WorkType.ONSITE]: "Onsite", [WorkType.REMOTE]: "Remote", [WorkType.VACATION]: "Vacation" })[
-						info.getValue() as WorkType
-					],
-				header: "Type",
+					({
+						[WorkType.ABSENT]: language.absent,
+						[WorkType.ONSITE]: language.onsite,
+						[WorkType.REMOTE]: language.remote,
+						[WorkType.VACATION]: language.vacation,
+					})[info.getValue() as WorkType],
+				header: language.type,
 				minSize: 100,
 				size: 100,
 			},
 			{
 				accessorKey: "id",
 				enableSorting: false,
-				header: "Actions",
+				header: language.actions,
 				cell(props) {
 					const work = props.row.original;
 					return (
 						(work?.timeOfExit || work?.type === WorkType.ABSENT || work?.type === WorkType.VACATION) && (
 							<div className="flex items-center justify-center gap-x-2">
 								<Button color="primary" className="text-sm" onClick={() => updateWork(work.id)}>
-									Edit
+									{language.edit}
 								</Button>
 								<Button color="negative" className="text-sm" onClick={() => deleteWork(work.id)}>
-									Delete
+									{language.delete}
 								</Button>
 							</div>
 						)
 					);
 				},
-				minSize: 130,
-				size: 140,
+				minSize: 180,
+				size: 180,
 			},
 		],
-		[data],
+		[data, currentLanguage],
 	);
 
 	const [sorting, setSorting] = useState<SortingState>([]);
@@ -171,8 +176,8 @@ export default function Panel() {
 		updateModals({
 			info: {
 				status: "warn",
-				title: "Are you sure?",
-				text: "You are about to delete a work record",
+				title: language.are_you_sure,
+				text: language.delete_record_desc,
 				isOpen: true,
 				onConfirm: async () => {
 					if (deleteWorkMutation.isPending) {
@@ -201,14 +206,14 @@ export default function Panel() {
 		<div className="flex h-full w-full flex-col">
 			<div className="m-5 flex">
 				<Button color="primary" className="w-max shrink-0" onClick={goToHome}>
-					Go to Home
+					{language.home}
 				</Button>
 				<div className="ml-auto flex gap-x-2">
 					<Button color="primary" className=" w-max shrink-0" onClick={donwloadReport}>
-						Download report
+						{language.download_report}
 					</Button>
 					<Button color="primary" className=" w-max shrink-0" onClick={createWork}>
-						Create manual record
+						{language.create_record}
 					</Button>
 				</div>
 			</div>

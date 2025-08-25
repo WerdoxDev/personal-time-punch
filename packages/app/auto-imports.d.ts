@@ -30,4 +30,6 @@ declare global {
   const IconMingcuteMinimizeFill: typeof import('~icons/mingcute/minimize-fill.jsx')['default']
   const IconMingcuteUpFill: typeof import('~icons/mingcute/up-fill.jsx')['default']
   const IconMingcuteWarningFill: typeof import('~icons/mingcute/warning-fill.jsx')['default']
+  const IconTwemojiFlagGermany: typeof import('~icons/twemoji/flag-germany.jsx')['default']
+  const IconTwemojiFlagUnitedKingdom: typeof import('~icons/twemoji/flag-united-kingdom.jsx')['default']
 }

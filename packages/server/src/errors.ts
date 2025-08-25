@@ -22,7 +22,7 @@ export function usernameTaken(c: Context, username: string) {
 }
 
 export function emailTaken(c: Context, email: string) {
-	const error: PTPError = { type: ErrorType.USERNAME_TAKEN, message: `${email} is already taken` };
+	const error: PTPError = { type: ErrorType.EMAIL_TAKEN, message: `${email} is already taken` };
 	return c.json(error, 400);
 }
 

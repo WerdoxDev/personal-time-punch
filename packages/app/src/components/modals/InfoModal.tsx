@@ -1,9 +1,11 @@
 import Button from "@components/Button";
 import { Description, Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
+import { useLanguage } from "@stores/languageStore";
 import { useModals } from "@stores/modalsStore";
 
 export default function InfoModal() {
 	const { info, updateModals } = useModals();
+	const { language } = useLanguage();
 
 	function close() {
 		updateModals({ info: { isOpen: false } });
@@ -12,7 +14,7 @@ export default function InfoModal() {
 	return (
 		<Dialog open={info.isOpen} onClose={close} transition className="relative z-50">
 			<div className="fixed inset-0 top-8 flex w-screen items-center justify-center bg-black/40">
-				<DialogPanel className="flex w-full max-w-xs flex-col items-center rounded-lg bg-background-700 p-5 shadow-xl">
+				<DialogPanel className="flex w-full max-w-sm flex-col items-center rounded-lg bg-background-700 p-5 shadow-xl">
 					{info.status === "info" ? (
 						<IconMingcuteInformationLine className="size-16 text-green-500" />
 					) : info.status === "error" ? (
@@ -20,11 +22,11 @@ export default function InfoModal() {
 					) : (
 						<IconMingcuteWarningFill className="size-16 text-amber-500" />
 					)}
-					<DialogTitle className="font-bold text-white text-xl">{info.title}</DialogTitle>
-					<Description className="mt-2.5 text-center text-white/80">{info.text}</Description>
+					<DialogTitle className="text-center font-bold text-white text-xl">{info.title}</DialogTitle>
+					<Description className="mt-2 text-center text-white/80">{info.text}</Description>
 					<div className="mt-5 flex w-full items-center justify-center gap-x-2">
 						<Button onClick={close} className="w-full" color="background-900">
-							Close
+							{info.onConfirm ? language.cancel : language.close}
 						</Button>
 						{info.onConfirm && (
 							<Button
@@ -35,7 +37,7 @@ export default function InfoModal() {
 								className="w-full"
 								color="primary"
 							>
-								Confirm
+								{language.confirm}
 							</Button>
 						)}
 					</div>

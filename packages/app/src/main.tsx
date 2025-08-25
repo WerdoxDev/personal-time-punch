@@ -2,6 +2,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import ReactDOM from "react-dom/client";
 import { RouterProvider } from "react-router";
 import "./index.css";
+import "moment";
+import "moment/dist/locale/de";
 import router from "./routes";
 
 const root = document.getElementById("root");
