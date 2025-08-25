@@ -3,8 +3,9 @@ import type { Configuration } from "electron-builder";
 export default {
 	productName: "Personal Time Punch",
 	appId: "dev.matin.personaltimepunch",
-	electronLanguages: ["en-US"],
+	electronLanguages: ["de-DE", "en-US"],
 	compression: "store",
+
 	win: {
 		target: { target: "nsis", arch: ["x64"] },
 		// publish: {

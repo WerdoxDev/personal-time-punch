@@ -64,6 +64,7 @@ export default function Panel() {
 				cell(props) {
 					const work = props.row.original;
 					const value = props.getValue();
+					console.log(value);
 
 					return work.type === WorkType.ONSITE || work.type === WorkType.REMOTE ? (
 						<div className="flex items-center gap-x-1">
@@ -92,7 +93,7 @@ export default function Panel() {
 							<div className="flex items-center gap-x-1">
 								<IconMingcuteArrowLeftUpFill className="size-5 text-red-400" />
 								<div>
-									{duration.asHours() > 24 ? moment(value).format("DD. MMM YYYY [-] HH:mm") : moment(value).format("HH:mm")}
+									{duration.asHours() > 24 ? moment(value).format("DD MMM YYYY [-] HH:mm") : moment(value).format("HH:mm")}
 									<span className="text-white/80"> ({duration.humanize()})</span>
 								</div>
 							</div>

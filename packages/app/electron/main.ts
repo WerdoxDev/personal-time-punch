@@ -42,6 +42,7 @@ function createWindow() {
 		frame: false,
 		titleBarStyle: "hidden",
 		webPreferences: {
+
 			contextIsolation: true,
 			nodeIntegration: true,
 			preload: path.join(__dirname, "preload.cjs"),
@@ -59,9 +60,6 @@ function createWindow() {
 
 		mainWindow.loadFile(filePath);
 	}
-
-	// Open the DevTools.
-	// mainWindow.webContents.openDevTools({ mode: "undocked" });
 
 	eventListeners(mainWindow);
 	configureTray(mainWindow);

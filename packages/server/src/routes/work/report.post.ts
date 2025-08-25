@@ -1,5 +1,5 @@
 import exceljs from "exceljs";
-import moment from "moment";
+import moment from "moment-timezone";
 import { WorkType } from "shared";
 import z from "zod";
 import { prisma } from "../../database";
@@ -60,8 +60,8 @@ createRoute("POST", "/report", verifyJwt(), validator("json", schema), async (c)
         totalWorkTimeSeconds += workTimeSeconds;
         totalOvertimeSeconds += overtimeSeconds;
 
-        const entryString = work.type === WorkType.ABSENT || work.type === WorkType.VACATION ? moment(work.timeOfEntry).format("DD.MM.YYYY") : moment(work.timeOfEntry).format("DD.MM.YYYY HH:mm");
-        const exitString = work.type === WorkType.ABSENT || work.type === WorkType.VACATION ? "-" : moment(work.timeOfExit).format("DD.MM.YYYY HH:mm");
+        const entryString = work.type === WorkType.ABSENT || work.type === WorkType.VACATION ? moment(work.timeOfEntry).tz("Europe/Berlin").format("DD.MM.YYYY") : moment(work.timeOfEntry).tz("Europe/Berlin").format("DD.MM.YYYY HH:mm");
+        const exitString = work.type === WorkType.ABSENT || work.type === WorkType.VACATION ? "-" : moment(work.timeOfExit).tz("Europe/Berlin").format("DD.MM.YYYY HH:mm");
         const workTime = moment.duration(workTimeSeconds, "seconds");
         const overtime = moment.duration(Math.abs(overtimeSeconds), "seconds");
 

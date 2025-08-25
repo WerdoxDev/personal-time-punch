@@ -47,6 +47,7 @@ export const workExtension = Prisma.defineExtension({
                 const startTime = new Date(startDate ?? "");
                 const endTime = new Date(endDate ?? "");
                 endTime.setHours(23, 59, 59, 999);
+                startTime.setHours(0, 0, 0, 0);
 
                 const works = await prisma.work.findMany({
                     orderBy: { id: "asc" },
