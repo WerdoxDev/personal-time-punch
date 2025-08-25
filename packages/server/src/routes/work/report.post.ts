@@ -31,7 +31,7 @@ createRoute("POST", "/report", verifyJwt(), validator("json", schema), async (c)
     let totalWorkTimeSeconds = 0;
     let totalOvertimeSeconds = 0;
     for (const work of works) {
-        if (!work.timeOfExit || work.type === WorkType.ABSENT || work.type === WorkType.VACATION) {
+        if (!work.timeOfExit && (work.type === WorkType.ONSITE || work.type === WorkType.REMOTE)) {
             continue;
         }
 
@@ -39,17 +39,19 @@ createRoute("POST", "/report", verifyJwt(), validator("json", schema), async (c)
         let restTimeSeconds = 0;
         let workTimeSeconds = 0;
 
-        const durationMs = new Date(work.timeOfExit).getTime() - new Date(work.timeOfEntry).getTime();
-        workTimeSeconds = durationMs / 1000;
+        if (work.timeOfExit && (work.type === WorkType.ONSITE || work.type === WorkType.REMOTE)) {
+            const durationMs = new Date(work.timeOfExit).getTime() - new Date(work.timeOfEntry).getTime();
+            workTimeSeconds = durationMs / 1000;
 
-        //work time more than 6 hours and less than or equal 9 hours. reduce 30 minutes for rest time
-        if (workTimeSeconds > 21600 && workTimeSeconds <= 32400) {
-            restTimeSeconds = 1800;
-        }
+            //work time more than 6 hours and less than or equal 9 hours. reduce 30 minutes for rest time
+            if (workTimeSeconds > 21600 && workTimeSeconds <= 32400) {
+                restTimeSeconds = 1800;
+            }
 
-        //work time more than 9 hours. reduce 45 minutes for rest time
-        if (workTimeSeconds > 32400) {
-            restTimeSeconds = 2700;
+            //work time more than 9 hours. reduce 45 minutes for rest time
+            if (workTimeSeconds > 32400) {
+                restTimeSeconds = 2700;
+            }
         }
 
         const actualWorkTimeSeconds = workTimeSeconds - restTimeSeconds;
