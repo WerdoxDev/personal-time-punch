@@ -59,8 +59,8 @@ export default function DownloadReportModal() {
 		<Dialog open={modal.isOpen} onClose={close} transition className="relative z-50">
 			<div className="fixed inset-0 top-8 flex w-screen items-center justify-center bg-black/40">
 				<DialogPanel className="flex w-full max-w-xs flex-col items-center rounded-lg bg-background-700 p-5 shadow-xl">
-					<DialogTitle className="font-bold text-white text-xl">Create work record</DialogTitle>
-					<Description className="text-center text-white/80">Manually create a work record</Description>
+					<DialogTitle className="font-bold text-white text-xl">Download work report</DialogTitle>
+					<Description className="text-center text-white/80">Download a report from a date range</Description>
 					<div className="mt-5 flex w-full select-none flex-col gap-y-2">
 						<div className="flex flex-col gap-y-1">
 							<div className="shrink-0 text-sm text-white/80">Start Date:</div>

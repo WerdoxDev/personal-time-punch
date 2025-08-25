@@ -10,6 +10,7 @@ export const electronAPI = {
 		ipcRenderer.on("window:is-maximized", callback);
 		return () => ipcRenderer.off("window:is-maximized", callback);
 	},
+	openExternal: (url: string) => ipcRenderer.send("shell:open-external", url)
 };
 
 contextBridge.exposeInMainWorld("electronAPI", electronAPI);

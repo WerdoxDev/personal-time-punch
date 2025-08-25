@@ -105,4 +105,8 @@ function eventListeners(mainWindow) {
 		if (mainWindow.isMaximized()) mainWindow.restore();
 		else mainWindow.maximize();
 	});
+	electron.ipcMain.on("shell:open-external", (_, url) => {
+		console.log("app:electron", "recv", "shell open external", "url:", url);
+		electron.shell.openExternal(url);
+	});
 }

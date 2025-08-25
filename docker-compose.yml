@@ -3,6 +3,26 @@ services:
     image: ptp-backend
     build: .
     container_name: ptp-backend
-    network_mode: host
+    restart: always
+    ports:
+      - 3001:3000
     env_file:
       - ./packages/server/.env
+
+  db:
+    image: postgres:17.6-alpine3.22
+    container_name: ptp-db
+    restart: always
+    ports:
+      - 5432:5432
+    volumes:
+      - ./postgres:/var/lib/postgresql
+    environment:
+      - POSTGRES_PASSWORD=nwi1250!
+
+  adminer:
+    image: adminer
+    restart: always
+    container_name: ptp-adminer
+    ports:
+      - 8081:8080

@@ -6,6 +6,7 @@ import { useUpdateWork } from "@hooks/useUpdateWork";
 import { getLatestWorkOptions } from "@lib/queries";
 import type { DropdownOption } from "@lib/types";
 import { useAPI } from "@stores/apiStore";
+import { useModals } from "@stores/modalsStore";
 import { useQuery } from "@tanstack/react-query";
 import moment from "moment";
 import { useEffect, useState } from "react";
@@ -24,6 +25,7 @@ export default function App() {
 	const createWorkMutation = useCreateWork();
 	const updateWorkMutation = useUpdateWork();
 	const logout = useLogout();
+	const { updateModals } = useModals();
 
 	const [startTimestamp, setStartTimestamp] = useState<number | undefined>(undefined);
 	const [endTimestamp, setEndTimestamp] = useState<number | undefined>(undefined);
@@ -71,6 +73,30 @@ export default function App() {
 		window.electronAPI.resize(1050, 800);
 	}
 
+	function about() {
+		updateModals({
+			info: {
+				isOpen: true,
+				status: "info",
+				onConfirm: undefined,
+				title: "About PTP",
+				text: (
+					<div className="">
+						Made by{" "}
+						<button
+							type="button"
+							className="cursor-pointer font-bold text-accent hover:underline"
+							onClick={() => window.electronAPI.openExternal("https://github.com/WerdoxDev")}
+						>
+							Matin Tat
+						</button>
+						<div className="text-sm">© 2025 Nanowired. All rights reserved.</div>
+					</div>
+				),
+			},
+		});
+	}
+
 	useEffect(() => {
 		if (!isRunning) {
 			setElapsed(Math.floor(((endTimestamp ?? 0) - (startTimestamp ?? 0)) / 1000));
@@ -110,11 +136,12 @@ export default function App() {
 			<div className="mt-10 text-2xl text-white">
 				Welcome <span className="font-bold text-accent">{user?.username}</span>
 			</div>
-			<div className="absolute top-2 right-2">
-				<button onClick={() => logout()} type="button" className="cursor-pointer rounded-md bg-rose-400 p-1">
-					<IconMingcuteExitFill className="text-white" />
-				</button>
-			</div>
+			<button onClick={() => logout()} type="button" className="absolute top-2 right-2 cursor-pointer rounded-md bg-rose-400 p-1">
+				<IconMingcuteExitFill className="text-white" />
+			</button>
+			<button onClick={() => about()} type="button" className="absolute top-2 left-2 cursor-pointer rounded-md bg-green-500 p-1">
+				<IconMingcuteInformationFill className="text-white" />
+			</button>
 			<div className="pointer-events-none absolute inset-0 flex items-center justify-center">
 				<div className="flex flex-col items-start">
 					{isLoading ? (

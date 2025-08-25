@@ -1,10 +1,11 @@
 import { produce } from "immer";
+import type { ReactNode } from "react";
 import type { APIWork, DeepPartial } from "shared";
 import { createStore, useStore } from "zustand";
 import { combine } from "zustand/middleware";
 
 const initialStore = () => ({
-	info: { isOpen: false, status: "none" as "none" | "info" | "error" | "warn", title: "", text: "", onConfirm: undefined as (() => (void) | Promise<void>) | undefined },
+	info: { isOpen: false, status: "none" as "none" | "info" | "error" | "warn", title: "", text: "" as ReactNode, onConfirm: undefined as (() => (void) | Promise<void>) | undefined },
 	createWork: { isOpen: false },
 	editWork: { isOpen: false, work: undefined as APIWork | undefined },
 	downloadReport: { isOpen: false }

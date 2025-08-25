@@ -1,5 +1,5 @@
 import path from "node:path";
-import { app, BrowserWindow, ipcMain, Menu, Tray } from "electron";
+import { app, BrowserWindow, ipcMain, Menu, shell, Tray } from "electron";
 
 const gotLock = app.requestSingleInstanceLock();
 
@@ -149,4 +149,11 @@ function eventListeners(mainWindow: BrowserWindow) {
 			mainWindow.maximize();
 		}
 	});
+
+	ipcMain.on("shell:open-external", (_, url: string) => {
+		console.log("app:electron", "recv", "shell open external", "url:", url);
+
+		shell.openExternal(url);
+	});
+
 }

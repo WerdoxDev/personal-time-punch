@@ -24,6 +24,7 @@ declare global {
   const IconMingcuteExitFill: typeof import('~icons/mingcute/exit-fill.jsx')['default']
   const IconMingcuteFullscreenExitFill: typeof import('~icons/mingcute/fullscreen-exit-fill.jsx')['default']
   const IconMingcuteFullscreenFill: typeof import('~icons/mingcute/fullscreen-fill.jsx')['default']
+  const IconMingcuteInformationFill: typeof import('~icons/mingcute/information-fill.jsx')['default']
   const IconMingcuteInformationLine: typeof import('~icons/mingcute/information-line.jsx')['default']
   const IconMingcuteLoading3Fill: typeof import('~icons/mingcute/loading3-fill.jsx')['default']
   const IconMingcuteMinimizeFill: typeof import('~icons/mingcute/minimize-fill.jsx')['default']
