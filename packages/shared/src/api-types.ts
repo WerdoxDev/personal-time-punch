@@ -42,7 +42,8 @@ export enum WorkType {
 	ONSITE = 0,
 	REMOTE = 1,
 	ABSENT = 2,
-	VACATION = 3
+	VACATION = 3,
+	SICK = 4
 }
 
 export type APIWork = {
