@@ -81,6 +81,8 @@ createRoute("POST", "/report", verifyJwt(), validator("json", schema), async (c)
         }
     }
 
+    const totalSum = moment.duration();
+    const overtimeSum = moment.duration();
     for (const work of formattedWorks) {
         const startString = work.start ? work.start.format("HH:mm") : "-";
         const endString = work.end ? work.end.format("HH:mm") : "-";
@@ -97,75 +99,28 @@ createRoute("POST", "/report", verifyJwt(), validator("json", schema), async (c)
 
         const row = worksheet.addRow([work.date, typeString, startString, endString, work.total !== undefined && work.overtime !== undefined ? totalString : "-", work.overtime !== undefined ? overtimeString : "-"])
 
+        if (work.total !== undefined && work.overtime !== undefined || (work.type !== WorkType.ONSITE && work.type !== WorkType.REMOTE && work.overtime !== undefined)) {
+            console.log(work.overtime)
+            totalSum.add(moment.duration(work.total, "seconds"));
+            overtimeSum.add(moment.duration(work.overtime, "seconds"));
+        }
+
         if (!work.isGroup) {
             row.eachCell((c) => {
-                c.style = { border: { bottom: { style: "thin", color: { argb: "#000000", theme: 1 }, } } }
+                c.style = { border: { bottom: { style: "thin", color: { argb: "#000000", theme: 0 }, } } }
             })
         }
     }
 
-    // let totalWorkTimeSeconds = 0;
-    // let totalOvertimeSeconds = 0;
-    // for (const work of works) {
-    //     if (!work.timeOfExit && (work.type === WorkType.ONSITE || work.type === WorkType.REMOTE)) {
-    //         continue;
-    //     }
+    const totalCell = worksheet.getCell(worksheet.rowCount + 1, row.cellCount - 1);
+    totalCell.style = { font: { bold: true } };
+    totalCell.value = `${Math.floor(totalSum.asHours()).toString().padStart(2, "0")}:${totalSum.minutes().toString().padStart(2, "0")}`
 
-    //     const overtimeReachLimitSeconds = 28800;
-    //     let restTimeSeconds = 0;
-    //     let workTimeSeconds = 0;
-
-    //     if (work.timeOfExit && (work.type === WorkType.ONSITE || work.type === WorkType.REMOTE)) {
-    //         const durationMs = new Date(work.timeOfExit).getTime() - new Date(work.timeOfEntry).getTime();
-    //         workTimeSeconds = durationMs / 1000;
-
-    //         //work time more than 6 hours and less than or equal 9 hours. reduce 30 minutes for rest time
-    //         if (workTimeSeconds > 21600 && workTimeSeconds <= 32400) {
-    //             restTimeSeconds = 1800;
-    //         }
-
-    //         //work time more than 9 hours. reduce 45 minutes for rest time
-    //         if (workTimeSeconds > 32400) {
-    //             restTimeSeconds = 2700;
-    //         }
-    //     }
-
-    //     const actualWorkTimeSeconds = workTimeSeconds - restTimeSeconds;
-    //     const overtimeSeconds = work.type === WorkType.VACATION ? 0 : actualWorkTimeSeconds - overtimeReachLimitSeconds;
-
-    //     totalWorkTimeSeconds += workTimeSeconds;
-    //     totalOvertimeSeconds += overtimeSeconds;
-
-    //     const dateString = moment(work.timeOfEntry).tz("Europe/Berlin").format("HH:mm");
-    //     const entryString =
-    //         work.type === WorkType.ABSENT || work.type === WorkType.VACATION ? "-" : moment(work.timeOfEntry).tz("Europe/Berlin").format("HH:mm");
-    //     const exitString =
-    //         work.type === WorkType.ABSENT || work.type === WorkType.VACATION ? "-" : moment(work.timeOfExit).tz("Europe/Berlin").format("HH:mm");
-    //     const workTime = moment.duration(workTimeSeconds, "seconds");
-    //     const overtime = moment.duration(Math.abs(overtimeSeconds), "seconds");
-
-    //     const durationString = `${Math.floor(workTime.asHours()).toString().padStart(2, "0")}:${workTime.minutes().toString().padStart(2, "0")}`;
-    //     const overtimeString = `${overtimeSeconds < 0 ? "-" : ""}${Math.floor(overtime.asHours()).toString().padStart(2, "0")}:${overtime.minutes().toString().padStart(2, "0")}`;
-
-    //     const typeString = { [WorkType.ABSENT]: "Absent", [WorkType.ONSITE]: "Onsite", [WorkType.REMOTE]: "Remote", [WorkType.VACATION]: "Vacation" }[
-    //         work.type
-    //     ];
-
-    //     const row = worksheet.addRow([typeString, entryString, exitString, durationString, overtimeString]);
-    //     row.getCell(2).numFmt = work.type === WorkType.ABSENT || work.type === WorkType.VACATION ? "DD.MM.YYYY" : "DD.MM.YYYY hh:mm";
-    //     row.getCell(3).numFmt = "DD.MM.YYYY hh:mm";
-    // }
-
-    // const totalWorkTimeDuration = moment.duration(totalWorkTimeSeconds, "seconds");
-    // const totalCell = worksheet.getCell(worksheet.rowCount + 1, row.cellCount);
-    // totalCell.style = { font: { bold: true } };
-    // totalCell.value = `${Math.floor(totalWorkTimeDuration.asHours()).toString().padStart(2, "0")}:${totalWorkTimeDuration.minutes().toString().padStart(2, "0")}`;
-
-    // const totalOvertimeDuration = moment.duration(Math.abs(totalOvertimeSeconds), "seconds");
-    // console.log(totalOvertimeSeconds, totalOvertimeDuration.asHours());
-    // const ovetimeCell = worksheet.getCell(worksheet.rowCount, row.cellCount + 1);
-    // ovetimeCell.style = { font: { bold: true } };
-    // ovetimeCell.value = `${totalOvertimeSeconds < 0 ? "-" : ""}${Math.floor(totalOvertimeDuration.asHours()).toString().padStart(2, "0")}:${totalOvertimeDuration.minutes().toString().padStart(2, "0")}`;
+    const ovetimeCell = worksheet.getCell(worksheet.rowCount, row.cellCount);
+    ovetimeCell.style = { font: { bold: true } };
+    const absSeconds = Math.abs(overtimeSum.asSeconds());
+    const newOvertimeSum = moment.duration(absSeconds, "seconds");
+    ovetimeCell.value = `${(overtimeSum.asSeconds()) < 0 ? "-" : ""}${Math.floor(newOvertimeSum.asHours()).toString().padStart(2, "0")}:${newOvertimeSum.minutes().toString().padStart(2, "0")}`
 
     worksheet.columns.forEach((column) => {
         column.width = 15;
