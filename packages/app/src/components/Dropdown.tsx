@@ -37,8 +37,8 @@ export function Dropdown<T>(props: {
 					)}
 				</ListboxButton>
 				<ListboxOptions
-					anchor={{ gap: props.anchor?.gap ?? 8, padding: props.anchor?.padding ?? 40 }}
-					className={clsx(colors[props.color], "flex w-(--button-width) flex-col gap-y-1 rounded-sm p-1 shadow-sm outline-none")}
+					anchor={{ gap: props.anchor?.gap ?? 8, padding: props.anchor?.padding ?? 40, to: "bottom start" }}
+					className={clsx(colors[props.color], "flex flex-col gap-y-1 rounded-sm bg-background-900 p-1 shadow-sm outline-none")}
 				>
 					{props.options.map((x) => (
 						<ListboxOption key={x.value as Key} value={x} className="cursor-pointer rounded px-2 py-1 text-left text-white hover:bg-white/10">

@@ -25,7 +25,7 @@ export default function InfoModal() {
 					<DialogTitle className="text-center font-bold text-white text-xl">{info.title}</DialogTitle>
 					<Description className="mt-2 text-center text-white/80">{info.text}</Description>
 					<div className="mt-5 flex w-full items-center justify-center gap-x-2">
-						<Button onClick={close} className="w-full" color="background-900">
+						<Button onClick={close} className="w-full" color="background-800">
 							{info.onConfirm ? language.cancel : language.close}
 						</Button>
 						{info.onConfirm && (
