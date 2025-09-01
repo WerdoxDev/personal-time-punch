@@ -60,12 +60,15 @@ createRoute("POST", "/report", verifyJwt(), validator("json", schema), async (c)
     const worksheet = workbook.addWorksheet(language.report);
 
     worksheet.addRow([`${language.name}:`, `${user.firstName} ${user.lastName}`]);
-    worksheet.addRow([`${language.from}:`, new Date(body.startDate), `${language.to}:`, new Date(body.endDate)]);
+    const row = worksheet.addRow([`${language.from}:`, new Date(body.startDate), `${language.to}:`, new Date(body.endDate)]);
+    row.eachCell(c => {
+        c.alignment.horizontal = "left"
+    })
 
     worksheet.addRow([]);
 
-    const row = worksheet.addRow([language.date, language.type, language.start, language.end, language.total, language.overtime]);
-    row.eachCell((cell) => {
+    const row2 = worksheet.addRow([language.date, language.type, language.start, language.end, language.total, language.overtime]);
+    row2.eachCell((cell) => {
         cell.style = { font: { bold: true } };
     });
 
@@ -145,7 +148,6 @@ createRoute("POST", "/report", verifyJwt(), validator("json", schema), async (c)
         const row = worksheet.addRow([work.date, typeString, startString, endString, work.total !== undefined && work.overtime !== undefined ? totalString : "-", work.overtime !== undefined ? overtimeString : "-"])
 
         if (work.total !== undefined && work.overtime !== undefined || (work.type !== WorkType.ONSITE && work.type !== WorkType.REMOTE && work.overtime !== undefined)) {
-            console.log(work.overtime)
             totalSum.add(moment.duration(work.total, "seconds"));
             overtimeSum.add(moment.duration(work.overtime, "seconds"));
         }
