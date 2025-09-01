@@ -54,7 +54,10 @@ createRoute("POST", "/report", verifyJwt(), validator("json", schema), async (c)
     const language = body.language === "en" ? english : body.language === "de" ? german : english;
 
     const user = await prisma.user.getById(payload.id, { select: selectPrivateUser });
-    const works = await prisma.work.getUserWorks(payload.id, body.startDate, body.endDate, { select: selectWork });
+
+    // Filter out the ones that are not finished yet
+    const works = (await prisma.work.getUserWorks(payload.id, body.startDate, body.endDate, { select: selectWork }))
+        .filter(x => x.timeOfExit !== null || (x.type !== WorkType.ONSITE && x.type !== WorkType.REMOTE));
 
     const workbook = new exceljs.Workbook();
     const worksheet = workbook.addWorksheet(language.report);
@@ -76,7 +79,7 @@ createRoute("POST", "/report", verifyJwt(), validator("json", schema), async (c)
     moment.tz(timezone);
 
     const formattedWorks: FormattedWork[] = [];
-    for (const [index, work] of works.filter(x => x.timeOfExit || (x.type !== WorkType.ONSITE && x.type !== WorkType.REMOTE)).entries()) {
+    for (const [index, work] of works.entries()) {
         const nextWork = works[index + 1];
         const previousWork = works[index - 1];
 
