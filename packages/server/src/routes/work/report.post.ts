@@ -78,9 +78,15 @@ createRoute("POST", "/report", verifyJwt(), validator("json", schema), async (c)
             continue;
         }
 
+        const nextWork = works[index + 1];
+        const previousWork = works[index - 1];
+
         const isTimeCalculable = work.type !== WorkType.ABSENT && work.type !== WorkType.SICK && work.type !== WorkType.VACATION;
-        const isNextSameDate = moment(work.timeOfEntry).isSame(works[index + 1]?.timeOfEntry, "date")
-        const isPreviousSameDate = moment(work.timeOfEntry).isSame(works[index - 1]?.timeOfEntry, "date")
+        const isNextTimeCalculable = nextWork.type !== WorkType.ABSENT && nextWork.type !== WorkType.SICK && nextWork.type !== WorkType.VACATION
+        const isPreviousTimeCalculable = previousWork.type !== WorkType.ABSENT && previousWork.type !== WorkType.SICK && previousWork.type !== WorkType.VACATION
+
+        const isNextSameDate = isNextTimeCalculable ? moment(work.timeOfEntry).isSame(nextWork?.timeOfEntry, "date") : false;
+        const isPreviousSameDate = isPreviousTimeCalculable ? moment(work.timeOfEntry).isSame(previousWork?.timeOfEntry, "date") : false;
 
         const date = moment(work.timeOfEntry).tz(timezone).format("DD.MM.YYYY");
         const start = isTimeCalculable ? moment(work.timeOfEntry).tz(timezone) : undefined;
