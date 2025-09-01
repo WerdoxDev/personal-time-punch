@@ -76,12 +76,7 @@ createRoute("POST", "/report", verifyJwt(), validator("json", schema), async (c)
     moment.tz(timezone);
 
     const formattedWorks: FormattedWork[] = [];
-    for (const [index, work] of works.entries()) {
-        // If is not finished then continue
-        if (!work.timeOfExit && (work.type === WorkType.ONSITE || work.type === WorkType.REMOTE)) {
-            continue;
-        }
-
+    for (const [index, work] of works.filter(x => x.timeOfExit || (x.type !== WorkType.ONSITE && x.type !== WorkType.REMOTE)).entries()) {
         const nextWork = works[index + 1];
         const previousWork = works[index - 1];
 
