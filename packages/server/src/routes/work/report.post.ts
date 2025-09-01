@@ -73,6 +73,7 @@ createRoute("POST", "/report", verifyJwt(), validator("json", schema), async (c)
     });
 
     const timezone = "Europe/Berlin";
+    moment.tz(timezone);
 
     const formattedWorks: FormattedWork[] = [];
     for (const [index, work] of works.entries()) {
@@ -86,13 +87,13 @@ createRoute("POST", "/report", verifyJwt(), validator("json", schema), async (c)
 
         const isTimeCalculable = work.type !== WorkType.ABSENT && work.type !== WorkType.SICK && work.type !== WorkType.VACATION;
 
-        const isNextSameDate = nextWork ? moment(work.timeOfEntry).isSame(nextWork?.timeOfEntry, "date") : false;
-        const isPreviousSameDate = previousWork ? moment(work.timeOfEntry).isSame(previousWork?.timeOfEntry, "date") : false;
+        const isNextSameDate = nextWork ? moment(work.timeOfEntry).tz(timezone).isSame(nextWork?.timeOfEntry, "date") : false;
+        const isPreviousSameDate = previousWork ? moment(work.timeOfEntry).tz(timezone).isSame(previousWork?.timeOfEntry, "date") : false;
 
         const date = moment(work.timeOfEntry).tz(timezone).format("DD.MM.YYYY");
         const start = isTimeCalculable ? moment(work.timeOfEntry).tz(timezone) : undefined;
         const end = isTimeCalculable ? moment(work.timeOfExit).tz(timezone) : undefined;
-        const isNextDay = isTimeCalculable ? moment(end).isAfter(start, "date") : false;
+        const isNextDay = isTimeCalculable ? moment(end).tz(timezone).isAfter(start, "date") : false;
         const contract = moment.duration(8, "hours");
 
         // This record is not calculable.
@@ -165,7 +166,7 @@ createRoute("POST", "/report", verifyJwt(), validator("json", schema), async (c)
         const row = worksheet.addRow([dateString, typeString, startString, endString, totalString, work.overtime !== undefined ? overtimeString : "-"])
 
         if (work.isGroup) {
-            row.getCell(5).style = { font: { size: 9 } };
+            row.getCell(5).style = { font: { size: 9, italic: true } };
         }
 
         if (work.total !== undefined && work.overtime !== undefined || (work.type !== WorkType.ONSITE && work.type !== WorkType.REMOTE && work.overtime !== undefined)) {
