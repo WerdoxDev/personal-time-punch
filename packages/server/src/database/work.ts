@@ -50,7 +50,7 @@ export const workExtension = Prisma.defineExtension({
                 startTime.setHours(0, 0, 0, 0);
 
                 const works = await prisma.work.findMany({
-                    orderBy: { id: "asc" },
+                    orderBy: { timeOfEntry: "asc" },
                     where: {
                         userId: BigInt(userId),
                         timeOfEntry: {

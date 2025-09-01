@@ -24,7 +24,7 @@ export function Dropdown<T>(props: {
 			<Listbox value={props.selected} onChange={props.onChange}>
 				<ListboxButton
 					className={clsx(
-						"relative flex w-full cursor-pointer items-center justify-center gap-x-1 rounded-sm px-2 py-1 text-white outline-none",
+						"relative flex w-full cursor-pointer items-center justify-between gap-x-1 rounded-sm px-2 py-1 text-white outline-none",
 						colors[props.color],
 						props.className,
 					)}
@@ -32,7 +32,7 @@ export function Dropdown<T>(props: {
 					{({ open }) => (
 						<>
 							{props.selected.text}
-							<div className="ml-auto">{open ? <IconMingcuteUpFill /> : <IconMingcuteDownFill />}</div>
+							{open ? <IconMingcuteUpFill /> : <IconMingcuteDownFill />}
 						</>
 					)}
 				</ListboxButton>

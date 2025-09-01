@@ -10,7 +10,7 @@ export default function DownloadReportModal() {
 
 	const [startDate, setStartDate] = useState<string | undefined>(undefined);
 	const [endDate, setEndDate] = useState<string | undefined>(undefined);
-	const { language } = useLanguage();
+	const { language, currentLanguage } = useLanguage();
 
 	const downloadReportMutation = useDownloadReport();
 
@@ -52,6 +52,7 @@ export default function DownloadReportModal() {
 		await downloadReportMutation.mutateAsync({
 			startDate: startDateTime.toISOString(),
 			endDate: endDateTime.toISOString(),
+			language: currentLanguage,
 		});
 
 		close();

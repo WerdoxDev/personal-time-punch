@@ -1,5 +1,5 @@
 import exceljs from "exceljs";
-import moment, { type Moment, type MomentInput } from "moment-timezone";
+import moment, { type Moment } from "moment-timezone";
 import { type Snowflake, WorkType } from "shared";
 import z from "zod";
 import { prisma } from "../../database";
@@ -10,22 +10,61 @@ type FormattedWork = { id: Snowflake; type: WorkType; date: string; start?: Mome
 
 const schema = z.object({ startDate: z.string(), endDate: z.string(), language: z.optional(z.string()) });
 
+const english = {
+    name: "Name",
+    from: "From",
+    to: "To",
+    report: "Report",
+    date: "Date",
+    type: "Type",
+    start: "Start",
+    end: "End",
+    total: "Total",
+    overtime: "Overtime",
+    absent: "Absent",
+    onsite: "Onsite",
+    remote: "Remote",
+    vacation: "Vacation",
+    sick: "Sick",
+    day_short: "d"
+}
+
+const german = {
+    name: "Name",
+    from: "Von",
+    to: "Bis",
+    report: "Bericht",
+    date: "Datum",
+    type: "Typ",
+    start: "Start",
+    end: "Ende",
+    total: "Gesamt",
+    overtime: "Überstunde",
+    absent: "Fehlzeit",
+    onsite: "Vor Ort",
+    remote: "Homeoffice",
+    vacation: "Urlaub",
+    sick: "Krank",
+    day_short: "T"
+}
+
 createRoute("POST", "/report", verifyJwt(), validator("json", schema), async (c) => {
     const payload = c.get("tokenPayload");
     const body = c.req.valid("json");
+    const language = body.language === "en" ? english : body.language === "de" ? german : english;
 
     const user = await prisma.user.getById(payload.id, { select: selectPrivateUser });
     const works = await prisma.work.getUserWorks(payload.id, body.startDate, body.endDate, { select: selectWork });
 
     const workbook = new exceljs.Workbook();
-    const worksheet = workbook.addWorksheet("Report");
+    const worksheet = workbook.addWorksheet(language.report);
 
-    worksheet.addRow(["Name:", `${user.firstName} ${user.lastName}`]);
-    worksheet.addRow(["From:", new Date(body.startDate), "To:", new Date(body.endDate)]);
+    worksheet.addRow([`${language.name}:`, `${user.firstName} ${user.lastName}`]);
+    worksheet.addRow([`${language.from}:`, new Date(body.startDate), `${language.to}:`, new Date(body.endDate)]);
 
     worksheet.addRow([]);
 
-    const row = worksheet.addRow(["Date", "Type", "Start", "End", "Total", "Overtime"]);
+    const row = worksheet.addRow([language.date, language.type, language.start, language.end, language.total, language.overtime]);
     row.eachCell((cell) => {
         cell.style = { font: { bold: true } };
     });
@@ -46,7 +85,7 @@ createRoute("POST", "/report", verifyJwt(), validator("json", schema), async (c)
         const date = moment(work.timeOfEntry).tz(timezone).format("DD.MM.YYYY");
         const start = isTimeCalculable ? moment(work.timeOfEntry).tz(timezone) : undefined;
         const end = isTimeCalculable ? moment(work.timeOfExit).tz(timezone) : undefined;
-        const isNextDay = isTimeCalculable ? !moment(start).isSame(end, "date") : false;
+        const isNextDay = isTimeCalculable ? moment(end).isAfter(start, "date") : false;
         const contract = moment.duration(8, "hours");
 
         if (!isTimeCalculable) {
@@ -85,9 +124,9 @@ createRoute("POST", "/report", verifyJwt(), validator("json", schema), async (c)
     const overtimeSum = moment.duration();
     for (const work of formattedWorks) {
         const startString = work.start ? work.start.format("HH:mm") : "-";
-        const endString = work.end ? work.end.format("HH:mm") : "-";
+        const endString = work.end ? work.isNextDay ? work.end.format(`HH:mm [+1${language.day_short}]`) : work.end.format("HH:mm") : "-";
 
-        const typeString = { [WorkType.ABSENT]: "Absent", [WorkType.ONSITE]: "Onsite", [WorkType.REMOTE]: "Remote", [WorkType.VACATION]: "Vacation", [WorkType.SICK]: "Sick" }[
+        const typeString = { [WorkType.ABSENT]: language.absent, [WorkType.ONSITE]: language.onsite, [WorkType.REMOTE]: language.remote, [WorkType.VACATION]: language.vacation, [WorkType.SICK]: language.sick }[
             work.type
         ];
 

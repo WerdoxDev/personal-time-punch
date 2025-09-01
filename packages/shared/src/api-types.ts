@@ -62,6 +62,7 @@ export type APIPostWorkJSONBody = {
 export type APIPostReportJSONBody = {
 	startDate: string;
 	endDate: string;
+	language?: "en" | "de"
 }
 
 export type APIPatchWorkJSONBody = {

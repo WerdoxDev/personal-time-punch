@@ -15,6 +15,7 @@ type Language = {
     session_type: string;
     dont_have_account: string;
     already_have_account: string
+    span_next_day: string;
     email: string;
     password: string;
     username: string;
@@ -48,6 +49,7 @@ type Language = {
     remote: string;
     absent: string;
     vacation: string;
+    sick: string;
     edit_work_record: string;
     edit_work_record_desc: string;
     incorrect_date_title: string;
@@ -58,6 +60,7 @@ type Language = {
     are_you_sure: string;
     delete_record_desc: string;
     not_finished: string;
+    day_short: string,
     [ErrorType.EMAIL_TAKEN]: string;
     [ErrorType.PASSWORD_TOO_SHORT]: string;
     [ErrorType.INVALID_CREDENTIALS]: string;
@@ -102,6 +105,7 @@ const english: Language = {
     cancel: "Cancel",
     close: "Close",
     confirm: "Confirm",
+    span_next_day: "Spans to next day",
     download_work_report: "Download work report",
     download_work_report_desc: "Download a work report from a date range",
     create_work_record: "Create record",
@@ -113,6 +117,7 @@ const english: Language = {
     onsite: "Onsite",
     remote: "Remote",
     vacation: "Vacation",
+    sick: "Sick",
     edit_work_record: "Edit record",
     edit_work_record_desc: "Edit an existing record",
     incorrect_date_title: "Incorrect time",
@@ -123,6 +128,7 @@ const english: Language = {
     are_you_sure: "Are you sure?",
     delete_record_desc: "You are about to delete a record",
     not_finished: "Not finished",
+    day_short: "d",
     [ErrorType.EMAIL_TAKEN]: "Email is already taken",
     [ErrorType.USERNAME_TAKEN]: "Username is already taken",
     [ErrorType.INVALID_CREDENTIALS]: "Invalid login credentials",
@@ -152,6 +158,7 @@ const german: Language = {
     entry: "Start",
     exit: "Ende",
     actions: "Aktion",
+    span_next_day: "Erstreckt sich bis zum nächsten Tag",
     create_record: "Datensatz erstellen",
     date: "Datum",
     day_of_week: "Wochentag",
@@ -176,6 +183,7 @@ const german: Language = {
     onsite: "Vor Ort",
     remote: "Homeoffice",
     vacation: "Urlaub",
+    sick: "Krank",
     edit_work_record: "Datensatz bearbeiten",
     edit_work_record_desc: "Einen bestehenden Datensatz bearbeiten",
     incorrect_date_title: "Falsche Uhrzeit",
@@ -186,6 +194,7 @@ const german: Language = {
     are_you_sure: "Sind Sie sicher?",
     delete_record_desc: "Sie sind dabei, einen Datensatz zu löschen",
     not_finished: "Nicht fertig",
+    day_short: "T",
     [ErrorType.EMAIL_TAKEN]: "Die E-Mail-Adresse ist bereits vergeben",
     [ErrorType.USERNAME_TAKEN]: "Der Benutzername ist bereits vergeben",
     [ErrorType.INVALID_CREDENTIALS]: "Ungültige Anmeldendaten",

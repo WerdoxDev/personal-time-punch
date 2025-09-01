@@ -1,10 +1,12 @@
 import Button from "@components/Button";
+import PCheckbox from "@components/Checkbox";
 import { Dropdown } from "@components/Dropdown";
 import { Description, Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
 import { useUpdateWork } from "@hooks/useUpdateWork";
 import type { DropdownOption } from "@lib/types";
 import { useLanguage } from "@stores/languageStore";
 import { useModals } from "@stores/modalsStore";
+import moment from "moment";
 import { type ChangeEvent, useEffect, useMemo, useState } from "react";
 import { WorkType } from "shared";
 
@@ -60,6 +62,7 @@ export default function EditWorkModal() {
 			{ text: language.onsite, value: WorkType.ONSITE },
 			{ text: language.absent, value: WorkType.ABSENT },
 			{ text: language.vacation, value: WorkType.VACATION },
+			{ text: language.sick, value: WorkType.SICK },
 		],
 		[currentLanguage],
 	);
@@ -73,6 +76,7 @@ export default function EditWorkModal() {
 	const [exitMinute, setExitMinute] = useState<DropdownOption<number>>(minuteOptions[0]);
 
 	const [type, setType] = useState<DropdownOption<WorkType>>(typeOptions[0]);
+	const [isNextDay, setIsNextDay] = useState(false);
 
 	const updateWorkMutation = useUpdateWork();
 
@@ -95,6 +99,10 @@ export default function EditWorkModal() {
 				const exitTime = new Date(modal.work.timeOfExit);
 				setExitHour(hourOptions.find((x) => x.value === exitTime.getHours()) ?? hourOptions[0]);
 				setExitMinute(getClosestMinuteOption(exitTime.getMinutes()));
+
+				if (moment(exitTime).isAfter(entryTime, "date")) {
+					setIsNextDay(true);
+				}
 			}
 
 			setType(typeOptions.find((x) => x.value === modal.work?.type) ?? typeOptions[0]);
@@ -121,6 +129,7 @@ export default function EditWorkModal() {
 		setExitMinute(minuteOptions[0]);
 		setType(typeOptions[0]);
 		setDate(undefined);
+		setIsNextDay(false);
 	}
 
 	async function edit() {
@@ -128,7 +137,7 @@ export default function EditWorkModal() {
 			return;
 		}
 
-		if (entryHour.value > exitHour.value || (entryHour.value === exitHour.value && entryMinute.value > exitMinute.value)) {
+		if (!isNextDay && (entryHour.value > exitHour.value || (entryHour.value === exitHour.value && entryMinute.value > exitMinute.value))) {
 			updateModals({
 				info: { isOpen: true, onConfirm: undefined, status: "warn", title: language.incorrect_date_title, text: language.incorrect_date_text },
 			});
@@ -140,6 +149,10 @@ export default function EditWorkModal() {
 
 		const exitDateTime = new Date(date);
 		exitDateTime.setHours(exitHour.value, exitMinute.value, 0, 0);
+
+		if (isNextDay) {
+			exitDateTime.setDate(exitDateTime.getDate() + 1);
+		}
 
 		await updateWorkMutation.mutateAsync({
 			id: modal.work.id,
@@ -175,27 +188,31 @@ export default function EditWorkModal() {
 							</div>
 						</div>
 						{(type.value === WorkType.ONSITE || type.value === WorkType.REMOTE) && (
-							<div className="flex w-full gap-x-2">
-								<div className="flex w-full flex-col gap-y-1">
-									<div className="shrink-0 text-sm text-white/80">{language.entry_time}:</div>
-									<div className="flex items-center justify-center gap-x-1 rounded-md bg-background-900 p-1">
-										<Dropdown selected={entryHour} onChange={setEntryHour} color="background-800" options={hourOptions} />
-										<div className="text-white">:</div>
-										<Dropdown selected={entryMinute} onChange={setEntryMinute} color="background-800" options={minuteOptions} />
+							<>
+								<div className="flex w-full gap-x-2">
+									<div className="flex w-full flex-col gap-y-1">
+										<div className="shrink-0 text-sm text-white/80">{language.entry_time}:</div>
+										<div className="flex items-center justify-center gap-x-1 rounded-md bg-background-900 p-1">
+											<Dropdown selected={entryHour} onChange={setEntryHour} color="background-800" options={hourOptions} />
+											<div className="text-white">:</div>
+											<Dropdown selected={entryMinute} onChange={setEntryMinute} color="background-800" options={minuteOptions} />
+										</div>
+									</div>
+									<div className="flex w-full flex-col gap-y-1">
+										<div className="shrink-0 text-sm text-white/80">{language.exit_time}:</div>
+										<div className="flex items-center justify-center gap-x-1 rounded-md bg-background-900 p-1">
+											<Dropdown selected={exitHour} onChange={setExitHour} color="background-800" options={hourOptions} />
+											<div className="text-white">:</div>
+											<Dropdown selected={exitMinute} onChange={setExitMinute} color="background-800" options={minuteOptions} />
+										</div>
 									</div>
 								</div>
-								<div className="flex w-full flex-col gap-y-1">
-									<div className="shrink-0 text-sm text-white/80">{language.exit_time}:</div>
-									<div className="flex items-center justify-center gap-x-1 rounded-md bg-background-900 p-1">
-										<Dropdown selected={exitHour} onChange={setExitHour} color="background-800" options={hourOptions} />
-										<div className="text-white">:</div>
-										<Dropdown selected={exitMinute} onChange={setExitMinute} color="background-800" options={minuteOptions} />
-									</div>
+								<div className="flex items-start gap-x-2">
+									<PCheckbox isChecked={isNextDay} onChange={setIsNextDay} />
+									<div className="text-white/80">{language.span_next_day}</div>
 								</div>
-							</div>
+							</>
 						)}
-						{/* {mode === "entry" && <ClockFace time={entryTime} onTimeChanged={setEntryTime} />}
-						{mode === "exit" && <ClockFace time={exitTime} onTimeChanged={setExitTime} />} */}
 					</div>
 					<div className="mt-5 flex w-full gap-x-2">
 						<Button onClick={close} color="background-800">

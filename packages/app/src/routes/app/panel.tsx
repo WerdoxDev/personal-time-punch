@@ -64,7 +64,6 @@ export default function Panel() {
 				cell(props) {
 					const work = props.row.original;
 					const value = props.getValue();
-					console.log(value);
 
 					return work.type === WorkType.ONSITE || work.type === WorkType.REMOTE ? (
 						<div className="flex items-center gap-x-1">
@@ -87,14 +86,18 @@ export default function Panel() {
 					const timeOfEntry = new Date(props.row.original.timeOfEntry).getTime();
 					const timeOfExit = new Date(value as string).getTime();
 					const duration = moment.duration(timeOfExit - timeOfEntry);
+					const isNextDay = moment(timeOfExit).isAfter(timeOfEntry, "date");
 
 					return work.type === WorkType.ONSITE || work.type === WorkType.REMOTE ? (
 						value ? (
 							<div className="flex items-center gap-x-1">
 								<IconMingcuteArrowLeftUpFill className="size-5 text-red-400" />
 								<div>
-									{duration.asHours() > 24 ? moment(value).format("DD MMM YYYY [-] HH:mm") : moment(value).format("HH:mm")}
-									<span className="text-white/80"> ({duration.humanize()})</span>
+									{isNextDay ? moment(value).format(`HH:mm [+1${language.day_short}]`) : moment(value).format("HH:mm")}
+									<span className="text-white/80">
+										{" "}
+										({Math.floor(duration.asHours()).toString().padStart(2, "0")}:{duration.minutes().toString().padStart(2, "0")})
+									</span>
 								</div>
 							</div>
 						) : (
@@ -117,10 +120,11 @@ export default function Panel() {
 						[WorkType.ONSITE]: language.onsite,
 						[WorkType.REMOTE]: language.remote,
 						[WorkType.VACATION]: language.vacation,
+						[WorkType.SICK]: language.sick,
 					})[info.getValue() as WorkType],
 				header: language.type,
-				minSize: 100,
-				size: 100,
+				minSize: 110,
+				size: 110,
 			},
 			{
 				accessorKey: "id",
