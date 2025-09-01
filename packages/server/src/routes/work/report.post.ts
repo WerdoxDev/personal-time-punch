@@ -82,8 +82,8 @@ createRoute("POST", "/report", verifyJwt(), validator("json", schema), async (c)
         const previousWork = works[index - 1];
 
         const isTimeCalculable = work.type !== WorkType.ABSENT && work.type !== WorkType.SICK && work.type !== WorkType.VACATION;
-        const isNextTimeCalculable = nextWork.type !== WorkType.ABSENT && nextWork.type !== WorkType.SICK && nextWork.type !== WorkType.VACATION
-        const isPreviousTimeCalculable = previousWork.type !== WorkType.ABSENT && previousWork.type !== WorkType.SICK && previousWork.type !== WorkType.VACATION
+        const isNextTimeCalculable = nextWork?.type !== WorkType.ABSENT && nextWork?.type !== WorkType.SICK && nextWork?.type !== WorkType.VACATION
+        const isPreviousTimeCalculable = previousWork?.type !== WorkType.ABSENT && previousWork?.type !== WorkType.SICK && previousWork?.type !== WorkType.VACATION
 
         const isNextSameDate = isNextTimeCalculable ? moment(work.timeOfEntry).isSame(nextWork?.timeOfEntry, "date") : false;
         const isPreviousSameDate = isPreviousTimeCalculable ? moment(work.timeOfEntry).isSame(previousWork?.timeOfEntry, "date") : false;
