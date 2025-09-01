@@ -38,6 +38,7 @@ type Language = {
     cancel: string;
     close: string;
     confirm: string;
+    total: string;
     download_work_report: string;
     download_work_report_desc: string;
     create_work_record: string;
@@ -112,6 +113,7 @@ const english: Language = {
     create_work_record_desc: "Manually create a record",
     create: "Create",
     entry_time: "Start time",
+    total: "Total",
     exit_time: "End time",
     absent: "Absent",
     onsite: "Onsite",
@@ -162,6 +164,7 @@ const german: Language = {
     create_record: "Datensatz erstellen",
     date: "Datum",
     day_of_week: "Wochentag",
+    total: "Gesamt",
     delete: "Löschen",
     edit: "Bearbeiten",
     download_report: "Bericht herunterladen",

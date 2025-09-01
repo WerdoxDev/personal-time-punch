@@ -7,7 +7,7 @@ import { useModals } from "@stores/modalsStore";
 import { useQuery } from "@tanstack/react-query";
 import { type ColumnDef, flexRender, getCoreRowModel, getSortedRowModel, type Row, type SortingState, useReactTable } from "@tanstack/react-table";
 import clsx from "clsx";
-import moment from "moment";
+import moment, { type Duration } from "moment";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router";
 import { type Snowflake, WorkType } from "shared";
@@ -31,7 +31,7 @@ export default function Panel() {
 						date: x.timeOfEntry,
 						timeOfEntry: x.timeOfEntry,
 						timeOfExit: x.timeOfExit,
-						dayOfWeek: moment(x.timeOfEntry).day(),
+						total: moment.duration(moment(x.timeOfExit).diff(x.timeOfEntry, "seconds"), "seconds"),
 						type: x.type,
 					}))
 				: [],
@@ -44,20 +44,24 @@ export default function Panel() {
 		() => [
 			{
 				accessorKey: "date",
-				cell: (info) => moment(info.getValue() as string).format("DD MMM YYYY"),
+				cell: (info) => moment(info.getValue() as string).format("dd, DD. MMM YYYY"),
 				sortingFn: sortDate,
 				header: language.date,
-				minSize: 140,
+				minSize: 160,
 				id: "date",
 			},
 			{
-				accessorKey: "dayOfWeek",
+				accessorKey: "type",
 				cell: (info) =>
-					moment()
-						.day(info.getValue() as number)
-						.format("ddd"),
-				header: language.day_of_week,
-				minSize: 150,
+					({
+						[WorkType.ABSENT]: language.absent,
+						[WorkType.ONSITE]: language.onsite,
+						[WorkType.REMOTE]: language.remote,
+						[WorkType.VACATION]: language.vacation,
+						[WorkType.SICK]: language.sick,
+					})[info.getValue() as WorkType],
+				header: language.type,
+				minSize: 110,
 			},
 			{
 				accessorKey: "timeOfEntry",
@@ -85,20 +89,13 @@ export default function Panel() {
 					const value = props.getValue();
 					const timeOfEntry = new Date(props.row.original.timeOfEntry).getTime();
 					const timeOfExit = new Date(value as string).getTime();
-					const duration = moment.duration(timeOfExit - timeOfEntry);
 					const isNextDay = moment(timeOfExit).isAfter(timeOfEntry, "date");
 
 					return work.type === WorkType.ONSITE || work.type === WorkType.REMOTE ? (
 						value ? (
 							<div className="flex items-center gap-x-1">
 								<IconMingcuteArrowLeftUpFill className="size-5 text-red-400" />
-								<div>
-									{isNextDay ? moment(value).format(`HH:mm [+1${language.day_short}]`) : moment(value).format("HH:mm")}
-									<span className="text-white/80">
-										{" "}
-										({Math.floor(duration.asHours()).toString().padStart(2, "0")}:{duration.minutes().toString().padStart(2, "0")})
-									</span>
-								</div>
+								<div>{isNextDay ? moment(value).format(`HH:mm [+1${language.day_short}]`) : moment(value).format("HH:mm")}</div>
 							</div>
 						) : (
 							<span className="text-white/80 italic">{language.not_finished}</span>
@@ -110,21 +107,25 @@ export default function Panel() {
 				header: language.exit,
 				sortingFn: sortDate,
 				id: "timeOfExit",
-				minSize: 250,
+				minSize: 120,
 			},
 			{
-				accessorKey: "type",
-				cell: (info) =>
-					({
-						[WorkType.ABSENT]: language.absent,
-						[WorkType.ONSITE]: language.onsite,
-						[WorkType.REMOTE]: language.remote,
-						[WorkType.VACATION]: language.vacation,
-						[WorkType.SICK]: language.sick,
-					})[info.getValue() as WorkType],
-				header: language.type,
-				minSize: 110,
-				size: 110,
+				accessorKey: "total",
+				header: language.total,
+				cell(props) {
+					const work = props.row.original;
+					const duration = props.getValue() as Duration;
+					return work.timeOfExit && (work.type === WorkType.ONSITE || work.type === WorkType.REMOTE) ? (
+						<div>
+							{Math.floor(duration.asHours()).toString().padStart(2, "0")}:{duration.minutes().toString().padStart(2, "0")}
+						</div>
+					) : (
+						<div>-</div>
+					);
+				},
+
+				minSize: 100,
+				size: 100,
 			},
 			{
 				accessorKey: "id",
@@ -133,7 +134,7 @@ export default function Panel() {
 				cell(props) {
 					const work = props.row.original;
 					return (
-						(work?.timeOfExit || work?.type === WorkType.ABSENT || work?.type === WorkType.VACATION) && (
+						(work?.timeOfExit || work?.type === WorkType.ABSENT || work?.type === WorkType.VACATION || work.type === WorkType.SICK) && (
 							<div className="flex items-center justify-center gap-x-2">
 								<Button color="primary" className="text-sm" onClick={() => updateWork(work.id)}>
 									{language.edit}
@@ -146,7 +147,6 @@ export default function Panel() {
 					);
 				},
 				minSize: 180,
-				size: 180,
 			},
 		],
 		[data, currentLanguage],

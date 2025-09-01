@@ -1,10 +1,11 @@
+import type { Duration } from "moment";
 import type { Snowflake, WorkType } from "shared";
 
 export type AppWork = {
     id: Snowflake;
     timeOfEntry: string | Date;
     timeOfExit?: string | Date;
-    dayOfWeek: number;
+    total: Duration;
     date: string | Date;
     type: WorkType
 }
