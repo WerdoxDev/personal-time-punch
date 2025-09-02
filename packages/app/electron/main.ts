@@ -1,5 +1,6 @@
 import path from "node:path";
 import { app, BrowserWindow, ipcMain, Menu, shell, Tray } from "electron";
+import { autoUpdater } from "electron-updater";
 
 const gotLock = app.requestSingleInstanceLock();
 
@@ -15,6 +16,19 @@ app.on("ready", async () => {
 	if (!gotLock) {
 		return;
 	}
+
+	autoUpdater.autoDownload = false;
+
+	autoUpdater.on("update-downloaded", () => {
+		autoUpdater.quitAndInstall(false, true);
+	})
+
+	const info = await autoUpdater.checkForUpdates();
+
+	if (info) {
+		await autoUpdater.downloadUpdate()
+	}
+
 
 	createWindow();
 
@@ -42,7 +56,6 @@ function createWindow() {
 		frame: false,
 		titleBarStyle: "hidden",
 		webPreferences: {
-
 			contextIsolation: true,
 			nodeIntegration: true,
 			preload: path.join(__dirname, "preload.cjs"),
@@ -118,7 +131,7 @@ function eventListeners(mainWindow: BrowserWindow) {
 
 	ipcMain.on("window:resize", (_, width: number, height: number) => {
 		mainWindow.setSize(width, height);
-	})
+	});
 
 	ipcMain.on("window:show-main", () => {
 		console.log("app:electron", "electron:recv", "window show main");
@@ -153,5 +166,4 @@ function eventListeners(mainWindow: BrowserWindow) {
 
 		shell.openExternal(url);
 	});
-
 }

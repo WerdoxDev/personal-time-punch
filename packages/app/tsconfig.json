@@ -14,5 +14,5 @@
 		},
 		"rootDirs": ["."]
 	},
-	"include": ["src", "auto-imports.d.ts", "electron", "src/index.d.ts"]
+	"include": ["src", "auto-imports.d.ts", "electron", "src/index.d.ts", "../server/src/routes/update.get.ts"]
 }

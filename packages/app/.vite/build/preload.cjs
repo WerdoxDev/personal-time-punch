@@ -1,4 +1,4 @@
-const require_chunk = require("./chunk-CUT6urMc.cjs");
+const require_chunk = require("./chunk-DEHCWMz8.cjs");
 const electron = require_chunk.__toESM(require("electron"));
 const electronAPI = {
 	minimize: () => electron.ipcRenderer.send("window:minimize"),

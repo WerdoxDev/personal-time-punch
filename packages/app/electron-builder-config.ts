@@ -8,11 +8,12 @@ export default {
 
 	win: {
 		target: { target: "nsis", arch: ["x64"] },
-		// publish: {
-		// 	provider: "generic",
-		// 	url: "https://midgard.huginn.dev/api/update/${os}",
-		// 	useMultipleRangeRequest: false,
-		// },
+		publish: {
+			provider: "generic",
+			url: "http://192.168.0.89:3001/update/${os}",
+			// url: "http://localhost:3001/update/${os}",
+			useMultipleRangeRequest: false,
+		},
 		icon: "assets/icon.ico",
 	},
 	artifactName: "${productName}_${version}_${arch}-setup.${ext}",
