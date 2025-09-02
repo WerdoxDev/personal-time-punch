@@ -1,5 +1,5 @@
 import path from "node:path";
-import { app, BrowserWindow, ipcMain, Menu, shell, Tray } from "electron";
+import { app, BrowserWindow, dialog, ipcMain, Menu, shell, Tray } from "electron";
 import { autoUpdater } from "electron-updater";
 
 const gotLock = app.requestSingleInstanceLock();
@@ -17,18 +17,11 @@ app.on("ready", async () => {
 		return;
 	}
 
-	autoUpdater.autoDownload = false;
-
-	autoUpdater.on("update-downloaded", () => {
-		autoUpdater.quitAndInstall(false, true);
-	})
-
-	const info = await autoUpdater.checkForUpdates();
-
-	if (info) {
-		await autoUpdater.downloadUpdate()
+	const result = await tryUpdate();
+	if (!result) {
+		app.quit();
+		return;
 	}
-
 
 	createWindow();
 
@@ -166,4 +159,29 @@ function eventListeners(mainWindow: BrowserWindow) {
 
 		shell.openExternal(url);
 	});
+}
+
+async function tryUpdate() {
+	try {
+		autoUpdater.autoDownload = false;
+
+		autoUpdater.on("update-downloaded", () => {
+			autoUpdater.quitAndInstall(false, true);
+		})
+
+		autoUpdater.on("error", (e) => {
+			throw e;
+		});
+
+		const info = await autoUpdater.checkForUpdates();
+
+		if (info?.isUpdateAvailable) {
+			await autoUpdater.downloadUpdate();
+		}
+
+		return true;
+	} catch (_e) {
+		dialog.showErrorBox("Something went wrong", "PTP was not able to update. Make sure you are connected to the internet");
+		return false;
+	}
 }

@@ -11665,12 +11665,11 @@ if (!gotLock) {
 electron.app.on("ready", async () => {
 	console.log("app:electron", "electron:recv", "app ready");
 	if (!gotLock) return;
-	import_main.autoUpdater.autoDownload = false;
-	import_main.autoUpdater.on("update-downloaded", () => {
-		import_main.autoUpdater.quitAndInstall(false, true);
-	});
-	const info = await import_main.autoUpdater.checkForUpdates();
-	if (info) await import_main.autoUpdater.downloadUpdate();
+	const result = await tryUpdate();
+	if (!result) {
+		electron.app.quit();
+		return;
+	}
 	createWindow();
 	console.log("app:electron", "electron:default", "set startup");
 	electron.app.setLoginItemSettings({
@@ -11771,4 +11770,21 @@ function eventListeners(mainWindow) {
 		console.log("app:electron", "recv", "shell open external", "url:", url);
 		electron.shell.openExternal(url);
 	});
+}
+async function tryUpdate() {
+	try {
+		import_main.autoUpdater.autoDownload = false;
+		import_main.autoUpdater.on("update-downloaded", () => {
+			import_main.autoUpdater.quitAndInstall(false, true);
+		});
+		import_main.autoUpdater.on("error", (e) => {
+			throw e;
+		});
+		const info = await import_main.autoUpdater.checkForUpdates();
+		if (info?.isUpdateAvailable) await import_main.autoUpdater.downloadUpdate();
+		return true;
+	} catch (_e) {
+		electron.dialog.showErrorBox("Something went wrong", "PTP was not able to update. Make sure you are connected to the internet");
+		return false;
+	}
 }

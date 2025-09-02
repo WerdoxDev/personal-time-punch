@@ -7,7 +7,7 @@ services:
     ports:
       - 3001:3000
     volumes:
-      - ./update:packages/server/update
+      - ./update:/src/packages/server/update
     env_file:
       - ./packages/server/.env
 
